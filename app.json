@@ -1,0 +1,14 @@
+{
+  "expo": {
+    "scheme": "acme",
+    "web": {
+      "bundler": "metro"
+    },
+    "userInterfaceStayle": "automatic",
+    "name": "Quizzify",
+    "slug": "Quizzify",
+    "plugins": [
+      "expo-router"
+    ]
+  }
+}
