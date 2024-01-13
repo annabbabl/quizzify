@@ -1,5 +1,5 @@
 const COLORS = {
-  butttonLightColor: '#80A0AA',
+  secondaryColor: '#80A0AA',
   backgroundColor: '#FCFCFC', 
   primaryTextColor: "#000000",
   activityIndicatorColor: '#0000f'
@@ -50,7 +50,8 @@ const SHADOWS = {
   },
 };
 const BORDERRADIUS =  50; 
+const ICONSIZE =  35; 
 
 
-export { COLORS, FONT, SIZES, SHADOWS, BORDERRADIUS, IMAGES };
+export { COLORS, FONT, SIZES, SHADOWS, BORDERRADIUS, IMAGES, ICONSIZE};
   

@@ -1,2 +1,0 @@
-# quizzify
-quiz

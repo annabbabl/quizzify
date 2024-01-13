@@ -1,10 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { ActivityIndicator, ImageBackground, KeyboardAvoidingView, TextInput, View, } from 'react-native';
-import { createUserWithEmailAndPassword, onAuthStateChanged, updateProfile } from 'firebase/auth'
+import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth'
 import { CustomButton, CustomLink, CustomTitle } from '../../common/shared/components';
 import {containerStyles, imageStyles, styles} from "../../../styles/components.style";
 import { useTranslation } from "react-i18next";
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { COLORS, IMAGES, SHADOWS } from "../../../constants";
 import '../../../constants/i18next'
 import { FIREBASE_AUTH, FIREBASE_APP } from '../../../firebaseConfig'
@@ -31,15 +30,22 @@ const RegistrationScreen = ({navigation}: RouterProps) => {
     const handleRegistration = async () => {
       setLoading(true); 
       try{
-        const response = await createUserWithEmailAndPassword(auth, email, password)
-        console.log(response)
-
-        await updateProfile(response.user, { displayName: username });
-
-        Toast.show({
-          type: 'success',
-          text1:  t('registeredSuccessfull'),
-        });
+        if(username === null){
+          Toast.show({
+            type: 'error',
+            text1:  (('missingData')),
+          });
+          setLoading(false); 
+          console.error()
+        }else{
+          const response = await createUserWithEmailAndPassword(auth, email, password)
+          console.log(response)
+          await updateProfile(response.user, { displayName: username });
+          Toast.show({
+            type: 'success',
+            text1:  t('registeredSuccessfull'),
+          });
+        }
       }catch(error: any){
         console.log(error)
         setLoading(false); 

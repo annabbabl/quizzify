@@ -1,36 +1,46 @@
-import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import React from "react";
+import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
+import { MaterialIcons, MaterialCommunityIcons } from '@expo/vector-icons';
+import { SafeAreaView } from "react-native-safe-area-context";
+import { COLORS, SIZES } from "../../constants";
+import { useTranslation } from "react-i18next";
+import { ICONSIZE } from "../../constants/theme";
+import sideBarItems from "../../constants/sideBarItems";
 
-const Sidebar = ({ navigation }) => {
-  const navigateToScreen = (screenName) => {
-    navigation.navigate(screenName);
-  };
+
+const Sidebar = ({navigation}) => {
+  const { t } = useTranslation();
 
   return (
-    <View style={styles.sidebar}>
-      <TouchableOpacity onPress={() => navigateToScreen('Home')}>
-        <Text style={styles.item}>Home</Text>
-      </TouchableOpacity>
-      <TouchableOpacity onPress={() => navigateToScreen('Profile')}>
-        <Text style={styles.item}>Profile</Text>
-      </TouchableOpacity>
-      <TouchableOpacity onPress={() => navigateToScreen('Settings')}>
-        <Text style={styles.item}>Settings</Text>
-      </TouchableOpacity>
-    </View>
+    <SafeAreaView style={sidebarStyles.sidebar}>
+      {sideBarItems.map((sideBarItem, index) => (
+        <TouchableOpacity onPress={() => navigation.navigate(sideBarItem.screenName)} key={index}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', marginVertical: 10 }}>
+            {sideBarItem.iconType === 'Material' ? (
+              <MaterialIcons name={sideBarItem.iconName} size={ICONSIZE} color="black" style={{ marginRight: 10 }} />
+            ) : (
+              <MaterialCommunityIcons name={sideBarItem.iconName} size={ICONSIZE} color="black" style={{ marginRight: 10 }} />
+            )}
+            <Text style={sidebarStyles.text}>{t(sideBarItem.name)}</Text>
+          </View>
+        </TouchableOpacity>
+      ))}
+    </SafeAreaView>
   );
 };
 
-const styles = StyleSheet.create({
+
+const sidebarStyles = StyleSheet.create({
   sidebar: {
     flex: 1,
-    backgroundColor: '#f0f0f0',
+    backgroundColor: COLORS.secondaryColor,
     padding: 20,
   },
-  item: {
-    fontSize: 18,
-    marginVertical: 10,
-  },
+  text: {
+    fontSize: SIZES.xLarge,
+    fontWeight: 'bold',
+    color: 'white',
+  }
 });
 
-export default Sidebar;
+export default Sidebar; 

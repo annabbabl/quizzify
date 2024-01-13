@@ -3,7 +3,7 @@ import { Text, TextInput, TouchableOpacity, TouchableOpacityProps, StyleSheet, V
 import { styles } from "../../../styles/components.style"
 import React, { useState } from "react";
 import * as Font from "expo-font";
-import { SHADOWS } from "../../../constants";
+import { SHADOWS, SIZES } from "../../../constants";
 
 
 const getFonts = () =>
@@ -13,6 +13,7 @@ const getFonts = () =>
 
 interface CustomButtonProps extends TouchableOpacityProps {
     label?: string;
+    bold?: boolean; 
     img?: string;
     secureTextEntry?: boolean, 
     value?: string, 
@@ -24,6 +25,15 @@ const CustomTitle: React.FC<CustomButtonProps>= ({label, ...rest}) =>{
         <Text style={styles.title} {...rest}>{label}</Text>
     )
 }
+
+const CustomText: React.FC<CustomButtonProps> = ({ label, bold, ...rest }) => {
+    return (
+      <Text style={bold ? styles.boldText : styles.normalText} {...rest}>
+        {label}
+      </Text>
+    );
+  };
+  
 
 const CustomButton: React.FC<CustomButtonProps> = ({ label,onPress,  ...rest }) =>{
     return (
@@ -53,6 +63,7 @@ const Rectangle: React.FC<CustomButtonProps> = ({ label,...rest }) =>{
     </View>
     );
 };
+
 
 const rectangleStyles = StyleSheet.create({
     groupChild: {
@@ -95,5 +106,5 @@ const rectangleStyles = StyleSheet.create({
 });
 
 export{
-    CustomButton, CustomTitle, CustomInput, CustomLink, Rectangle
+    CustomButton, CustomTitle, CustomInput, CustomLink, Rectangle, CustomText
 }

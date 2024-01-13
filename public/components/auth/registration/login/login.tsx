@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { ActivityIndicator, ImageBackground, KeyboardAvoidingView, TextInput, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import Toast from 'react-native-toast-message';
 import { useTranslation } from 'react-i18next';
 import { signInWithEmailAndPassword } from 'firebase/auth'

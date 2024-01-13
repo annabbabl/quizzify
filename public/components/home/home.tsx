@@ -39,11 +39,10 @@ const Home = ({navigation, loggedIn, setLoggedIn}: AuthRouterProps) => {
       }
     }            
 
-    
     return (
         <SafeAreaView style={containerStyles.container}>
           <ImageBackground source={IMAGES.BACKGROUND} resizeMethod="resize"style={imageStyles.backgroundImage}>
-            <Rectangle label={t('welcome')}/>
+            <Rectangle label={(t('welcomeName') + FIREBASE_AUTH.currentUser.displayName)}/>
             <Image source={IMAGES.LOGO} style={imageStyles.image1}/>
             <CustomButton label={'log Out'} onPress={handleLogout} />
 

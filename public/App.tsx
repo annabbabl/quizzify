@@ -1,12 +1,10 @@
 import { NavigationContainer } from "@react-navigation/native";
 import React, { useEffect, useState } from "react";
-import { createDrawerNavigator } from "@react-navigation/drawer";
 import { User, onAuthStateChanged } from "firebase/auth";
 import { FIREBASE_AUTH } from "./firebaseConfig";
 import AuthNavigator from "./navigation/AuthNavigator";
 import HomeNavigator from "./navigation/HomeNavigator";
 
-const Drawer = createDrawerNavigator();
 
 const App = () => {
   const [user, setUser] = useState<User | null>(null);
