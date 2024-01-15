@@ -23,6 +23,12 @@ i18next
                     clickMe: 'Click Me', 
                     continue: 'Continue',
                     update: 'Update',
+                    save: "Save",
+                    true: 'True', 
+                    false: 'False', 
+                    cancel: 'Cancel',
+                    errorUpdate: 'Error occurd while Updating',
+                    updatedSuccessfully: 'Successfully Updated!',
                     
                     //auth
                     welcome: 'Welcome!',
@@ -43,6 +49,14 @@ i18next
                     joynGame: 'Joyn Game',
                     welcomeName: 'Welcome ',
 
+                    //side bar
+                    lookAtGames: 'Games Statistics', 
+                    profile: 'Profile', 
+                    editTemplate: 'Edit Template', 
+                    questions: 'Edit Questions', 
+                    backToHome: 'Back To Homepage',
+                    home: 'Home Screen', 
+
                     //profile
                     email: 'Email', 
                     pw: 'Password', 
@@ -53,14 +67,37 @@ i18next
                     changePW: 'Passwort Ändern',
                     userPasswordsUpdateSuccess: 'Successfully Updated Password',
                     userPasswordUpdateError: 'Error Updating Password',
-                    
-                    //side bar
-                    lookAtGames: 'Games Statistics', 
-                    profile: 'Profile', 
-                    editTemplate: 'Edit Template', 
-                    editQuestions: 'Edit Questions', 
-                    backToHome: 'Back To Homepage'
+                    logOut: 'Log Out', 
+                    logoutSuccess:'Successfully Logged Out', 
+                    logoutError:'Eoor Logging Out', 
 
+                    //Questions Screen
+                    id: 'ID',
+                    question: 'Question', 
+                    rightAnswer: 'Right Answer', 
+                    trueFalseQuestion: 'True or False Question', 
+                    possibleAnswers: 'Possible Answers', 
+                    possibleAnswer: 'Possible Answer', 
+                    createdAt: 'Created At',          
+                    addQuestion: 'Add a Question', 
+                    editQuestion: 'Edit Questions', 
+
+                    // Add Qeustion
+                    questionAddedSuccessfully: 'Question Added Successfully',
+                    errorWhileAddingQuestion: 'Error While Adding Question',
+                    addPossibleAnswer: 'Add Possible Answer', 
+                    possibleAnswerAdded: 'Possible Answer Added',
+                    missingAnswers: 'Aqq more Answer Possibilities', 
+                    noQuestionsAvailiable: 'You have not added any questions Yet',
+                    maxPossibleAnswers: 'You have reached the maximum possible Possible Answers. Please save Your questions.',
+                    possibleAnswerDeleted: 'Possible Answer Deleted', 
+
+
+                    // Edit Qeustion
+                    questionsEditedSuccessfully: 'Questions Edited Successfully',
+                    questionEditedSuccessfully: 'Question Edited Successfully', 
+                    errorWhileEditingQuestions: 'Error While Editing the Questions',
+                    errorWhileEditingQuestion: 'Error While Editing the Question'
                 }
             },
             de: {
@@ -73,6 +110,12 @@ i18next
                     continue: 'Weiter',
                     settings: 'Einstellungen',
                     update: 'Update', 
+                    save: "Speichern",
+                    true: 'Wahr', 
+                    false: 'Falsch', 
+                    cancel: 'Abbrechen',
+                    errorUpdate: 'Ein Fehler ist beim Update Passiert',
+                    updatedSuccessfully: 'Erfolgreich Upgedated!',
 
                     //home screen
                     startGame: 'Starte Spiel',
@@ -92,6 +135,14 @@ i18next
                     backToLogin: 'Zurück zum Login',
                     welcome: 'Willkommen!',
                     welcometoQ: 'Willkommen zu Quizzify!',
+
+                    //side bar
+                    lookAtGames: 'Spiele Statistik',
+                    profile: 'Profile',
+                    editTemplate: 'Template Bearbeiten', 
+                    editQuestions: 'Fragen Bearbeiten',
+                    backToHome: 'Zurück zur Homepage',
+                    home: 'Home Screen', 
                     
                     //profile
                     email: 'Email',
@@ -103,14 +154,37 @@ i18next
                     changePW: 'Passwort Ändern',
                     userPasswordsUpdateSuccess: 'Erfolgreich Password Geändert',
                     userPasswordUpdateError: 'Ein Fehler ist bei dem Update des Passworts aufgetretten',
+                    logOut: 'Abmelden', 
+                    logoutSuccess:'Erfolgreich Abgemeldet', 
+                    logoutError:'Fehler bei der Abmeldeung', 
                     
-                    //side bar
-                    lookAtGames: 'Spiele Statistik',
-                    profile: 'Profile',
-                    editTemplate: 'Template Bearbeiten', 
-                    editQuestions: 'Fragen Bearbeiten',
-                    backToHome: 'Zurück zur Homepage'
-                    
+                    //Questions Screen
+                    id: 'ID',
+                    question: 'Frage', 
+                    rightAnswer: 'Richtige Antwort',
+                    trueFalseQuestion: 'Wahr/Falsch Frage', 
+                    possibleAnswers: 'Mögliche Antworten', 
+                    possibleAnswer: 'Mögliche Antwort', 
+                    createdAt: 'Hinzugefügt am',  
+                    addQuestion: 'Frage Hinzufügen', 
+                    editQuestion: 'Fragen Bearbeiten', 
+                    noQuestionsAvailiable: 'Noch hast Du Keine Fragen Hinzugefügt',
+
+                    // Add Qeustion
+                    questionAddedSuccessfully: 'Frage erfolgreich hinzugefügt',
+                    errorWhileAddingQuestion: 'Fehler beim einfügen der Frage',
+                    addPossibleAnswer: 'Antwortmöglichkeit Hinzufügen', 
+                    possibleAnswerAdded: 'Mögliche Antwort Hinzugefügt',
+                    missingAnswers: 'Füge mehr Antwortmöglichkeiten hinzu', 
+                    maxPossibleAnswers: 'Du hast die maxmal Mögliche Antwortanzhal erreicht. Bitte Speichere deine Frage',
+                    possibleAnswerDeleted: 'Antwortmöglichkeit Entfernt', 
+
+
+                    //Edit Questions
+                    questionsEditedSuccessfully: 'Fragen wurden Erfolgreich bearbeitet',
+                    questionEditedSuccessfully: 'Frage wurden Erfolgreich bearbeitet', 
+                    errorWhileEditingQuestions: 'Fehler beim bearbeiten der Fragen',
+                    errorWhileEditingQuestion: 'Fehler beim bearbeiten der Frage'
                 }
             }
         },

@@ -2,9 +2,7 @@
   "compilerOptions": {
     "paths": {
       "react": [ "./node_modules/@types/react" ]
-    }
-   
-    
+    },
   },
   "extends": "expo/tsconfig.base"
 }

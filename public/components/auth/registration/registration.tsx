@@ -1,14 +1,15 @@
 import React, { useState } from 'react';
 import { ActivityIndicator, ImageBackground, KeyboardAvoidingView, TextInput, View, } from 'react-native';
-import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth'
 import { CustomButton, CustomLink, CustomTitle } from '../../common/shared/components';
 import {containerStyles, imageStyles, styles} from "../../../styles/components.style";
 import { useTranslation } from "react-i18next";
 import { COLORS, IMAGES, SHADOWS } from "../../../constants";
 import '../../../constants/i18next'
-import { FIREBASE_AUTH, FIREBASE_APP } from '../../../firebaseConfig'
-import Toast from 'react-native-toast-message';
 import { NavigationProp } from '@react-navigation/native';
+import { showErrorToast, showSuccessToast } from '../../../constants/toasts';
+import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
+import { User } from '../../../types/database';
+import { FIREBASE_AUTH, FIRESTORE } from '../../../firebaseConfig';
 
 
 interface RouterProps{
@@ -17,53 +18,57 @@ interface RouterProps{
 
 const RegistrationScreen = ({navigation}: RouterProps) => {
     const {t} = useTranslation()
+    const usersCollection = FIRESTORE.collection('users');
 
     const [username, setUsername] = useState('')
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     const [loading, setLoading] = useState(false)
-    const auth = FIREBASE_AUTH
 
-    const users = FIREBASE_APP.firestore().collection('users')
-
-    
     const handleRegistration = async () => {
-      setLoading(true); 
       try{
+        setLoading(true)
+
         if(username === null){
-          Toast.show({
-            type: 'error',
-            text1:  (('missingData')),
-          });
-          setLoading(false); 
-          console.error()
+          showErrorToast('registrationFail')
         }else{
-          const response = await createUserWithEmailAndPassword(auth, email, password)
-          console.log(response)
-          await updateProfile(response.user, { displayName: username });
-          Toast.show({
-            type: 'success',
-            text1:  t('registeredSuccessfull'),
-          });
+          const response = await createUserWithEmailAndPassword(FIREBASE_AUTH, email, password)
+        
+          const newUser : User = {
+            id: response.user.uid,
+            email: email,
+            username: username,
+            loggedIn: false,
+            password: password
+          }
+
+          usersCollection.add(newUser)
+            .then(async (docRef) => {
+              console.log('Document written with ID:', docRef.id);
+              await updateProfile(response.user, { displayName: username });
+              showSuccessToast('registrationFail')
+            })
+            .catch((error) => {
+              console.error('Error adding document:', error);
+              showErrorToast('registeredSuccessfull'); 
+          });    
         }
       }catch(error: any){
         console.log(error)
-        setLoading(false); 
-        Toast.show({
-          type: 'error',
-          text1:  ('registrationFail'),
-        });
-        setLoading(false); 
+        showErrorToast('registrationFail'); 
+      }finally{
+        setLoading(false)
       }
     };
-  
+
+    
     return (
       <KeyboardAvoidingView behavior='padding' style={containerStyles.container}>
         <ImageBackground source={IMAGES.BACKGROUND} resizeMethod="scale" resizeMode="cover"style={imageStyles.backgroundImage}>
           <CustomTitle label={t('registration')} />
-            <TextInput style={[styles.input, SHADOWS.middle]} value= {username} editable={true} placeholder={t('name')} onChangeText={(username) => setUsername(username)} />
-            <TextInput style={[styles.input, SHADOWS.middle]} value= {email} editable={true} placeholder={t('email')} onChangeText={(email) => setEmail(email)} />
-            <TextInput style={[styles.input, SHADOWS.middle]} value= {password} editable={true} placeholder={t('pw')} secureTextEntry={true} onChangeText={(pw) => setPassword(pw)}/>
+            <TextInput style={[styles.input1, SHADOWS.middle]} value= {username} editable={true} placeholder={t('name')} onChangeText={(username) => setUsername(username)} />
+            <TextInput style={[styles.input1, SHADOWS.middle]} value= {email} editable={true} placeholder={t('email')} onChangeText={(email) => setEmail(email)} />
+            <TextInput style={[styles.input1, SHADOWS.middle]} value= {password} editable={true} placeholder={t('pw')} secureTextEntry={true} onChangeText={(pw) => setPassword(pw)}/>
           
           <View style={containerStyles.bottom}>
             {loading ? 
@@ -71,7 +76,6 @@ const RegistrationScreen = ({navigation}: RouterProps) => {
             ) : (
               <CustomButton label={t('registration')} onPress={handleRegistration} />
               )}
-            <CustomLink label={t('backToLogin')} onPress={()=>{navigation.navigate("Login")}} />
           </View>
         </ImageBackground>
       </KeyboardAvoidingView>

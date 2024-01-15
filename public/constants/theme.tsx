@@ -2,7 +2,12 @@ const COLORS = {
   secondaryColor: '#80A0AA',
   backgroundColor: '#FCFCFC', 
   primaryTextColor: "#000000",
-  activityIndicatorColor: '#0000f'
+  activityIndicatorColor: '#0000f', 
+  redPrimaryColor: '#B00000',
+  greenPrimaryColor: '#367D24',
+  redSecondaryColor: '#2BD800',
+  greenSecondaryColor: '#FB0303',
+  primaryIconColor: 'black'
 };
 
 const IMAGES = {
@@ -23,7 +28,8 @@ const SIZES = {
   medium: 16,
   large: 20,
   xLarge: 24,
-  xxLarge: 58,
+  xxLarge: 40,
+  xxxLarge: 58,
 };
 
 const SHADOWS = {
@@ -32,7 +38,7 @@ const SHADOWS = {
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 1,
     shadowRadius: 4,
-    elevation: 2, // For Android elevation
+    elevation: 2, 
   },
   middle: {
     shadowColor: 'rgba(0, 0, 0, 0.24)',
@@ -50,8 +56,13 @@ const SHADOWS = {
   },
 };
 const BORDERRADIUS =  50; 
-const ICONSIZE =  35; 
+
+const ICONSIZES = {
+  small:  35, 
+  medium: 60, 
+  large:  90, 
+}; 
 
 
-export { COLORS, FONT, SIZES, SHADOWS, BORDERRADIUS, IMAGES, ICONSIZE};
+export { COLORS, FONT, SIZES, SHADOWS, BORDERRADIUS, IMAGES, ICONSIZES as ICONSIZE};
   

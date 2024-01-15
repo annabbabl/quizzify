@@ -1,6 +1,15 @@
+import Home from "../components/home/home";
 import Profile from "../components/sideBarScreens/profile";
+import QuestionsScreen from "../components/sideBarScreens/questions/questionsScreen";
 
 const sideBarItems = [
+    {
+        name:'home',
+        iconType:'Material',
+        iconName:'home', 
+        screenName: 'Home',
+        component: Home
+    },
     {
         name:'profile',
         iconType:'Material',
@@ -23,11 +32,11 @@ const sideBarItems = [
         component: Profile
     },
     {
-        name: 'editQuestions',
+        name: 'questions',
         iconType:'MaterialCommunityIcons',
         iconName:'frequently-asked-questions',
-        screenName: 'EditQuestions', 
-        component: Profile
+        screenName: 'QuestionsScreen', 
+        component: QuestionsScreen
     },
 ];
 
