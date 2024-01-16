@@ -1,15 +1,16 @@
 import React, { useState } from 'react';
-import { ActivityIndicator, ImageBackground, KeyboardAvoidingView, TextInput, View, } from 'react-native';
+import { ActivityIndicator, ImageBackground, KeyboardAvoidingView, View, } from 'react-native';
 import { CustomButton, CustomLink, CustomTitle } from '../../common/shared/components';
 import {containerStyles, imageStyles, styles} from "../../../styles/components.style";
 import { useTranslation } from "react-i18next";
 import { COLORS, IMAGES, SHADOWS } from "../../../constants";
 import '../../../constants/i18next'
 import { NavigationProp } from '@react-navigation/native';
-import { showErrorToast, showSuccessToast } from '../../../constants/toasts';
 import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
-import { User } from '../../../types/database';
+import { UserDatabase } from '../../../types/databaseTypes';
 import { FIREBASE_AUTH, FIRESTORE } from '../../../firebaseConfig';
+import { TextInput } from "react-native-paper";
+import { NativeBaseProvider } from 'native-base';
 
 
 interface RouterProps{
@@ -30,11 +31,11 @@ const RegistrationScreen = ({navigation}: RouterProps) => {
         setLoading(true)
 
         if(username === null){
-          showErrorToast('registrationFail')
+          console.log(t('registrationFail'))
         }else{
           const response = await createUserWithEmailAndPassword(FIREBASE_AUTH, email, password)
         
-          const newUser : User = {
+          const newUser : UserDatabase = {
             id: response.user.uid,
             email: email,
             username: username,
@@ -46,16 +47,13 @@ const RegistrationScreen = ({navigation}: RouterProps) => {
             .then(async (docRef) => {
               console.log('Document written with ID:', docRef.id);
               await updateProfile(response.user, { displayName: username });
-              showSuccessToast('registrationFail')
             })
             .catch((error) => {
               console.error('Error adding document:', error);
-              showErrorToast('registeredSuccessfull'); 
           });    
         }
       }catch(error: any){
         console.log(error)
-        showErrorToast('registrationFail'); 
       }finally{
         setLoading(false)
       }
@@ -65,18 +63,46 @@ const RegistrationScreen = ({navigation}: RouterProps) => {
     return (
       <KeyboardAvoidingView behavior='padding' style={containerStyles.container}>
         <ImageBackground source={IMAGES.BACKGROUND} resizeMethod="scale" resizeMode="cover"style={imageStyles.backgroundImage}>
-          <CustomTitle label={t('registration')} />
-            <TextInput style={[styles.input1, SHADOWS.middle]} value= {username} editable={true} placeholder={t('name')} onChangeText={(username) => setUsername(username)} />
-            <TextInput style={[styles.input1, SHADOWS.middle]} value= {email} editable={true} placeholder={t('email')} onChangeText={(email) => setEmail(email)} />
-            <TextInput style={[styles.input1, SHADOWS.middle]} value= {password} editable={true} placeholder={t('pw')} secureTextEntry={true} onChangeText={(pw) => setPassword(pw)}/>
-          
+          <NativeBaseProvider>
+          <View style={{alignItems:'center'}}>
+            <CustomTitle label={t('registration')}/>
+          </View> 
+            <TextInput
+                label={(t('name'))}
+                value={username}
+                right={<TextInput.Icon icon="account" />}
+                onChangeText={(username) => setUsername(username)}
+                placeholder={t('name')}
+                style={{ marginTop: 30, marginBottom: 20}}
+            />   
+            <TextInput
+                label={t('email')}
+                value={email}
+                right={<TextInput.Icon icon="email" />}
+                onChangeText={(email) => setEmail(email)}
+                placeholder={t('email')}
+                style={{ marginBottom: 20}}
+            />
+            <TextInput
+                label={(t('password'))}
+                value={password}
+                secureTextEntry
+                right={<TextInput.Icon icon="onepassword" />}
+                onChangeText={(password) => setPassword(password)}
+                placeholder={t('pw')}
+                style={{ marginBottom: 20}}
+            />     
           <View style={containerStyles.bottom}>
             {loading ? 
               (<ActivityIndicator size='large' color={COLORS.activityIndicatorColor}/>
             ) : (
-              <CustomButton label={t('registration')} onPress={handleRegistration} />
+              <>
+               <CustomLink label={t('backToLogin')} onPress={()=>{navigation.navigate("Login")}} />
+                <CustomButton label={t('registration')} onPress={handleRegistration} />
+              </>
               )}
           </View>
+          </NativeBaseProvider>
         </ImageBackground>
       </KeyboardAvoidingView>
     );

@@ -21,7 +21,7 @@ const Sidebar = ({navigation}) => {
           iconName={sideBarItem.iconName}
           iconType={sideBarItem.iconType}
           iconSize={ICONSIZE.small}
-          iconColor={COLORS.primaryIconColor}/>
+          iconColor={'white'}/>
       ))}
     </SafeAreaView>
   );

@@ -1,7 +1,6 @@
 import React from "react";
 import { createDrawerNavigator } from "@react-navigation/drawer";
 import Sidebar from "../components/home/sidebar";
-import Home from "../components/home/home";
 import sideBarItems from "../constants/sideBarItems";
 import Profile from "../components/sideBarScreens/profile";
 

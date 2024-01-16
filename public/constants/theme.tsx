@@ -1,6 +1,6 @@
 const COLORS = {
-  secondaryColor: '#80A0AA',
-  backgroundColor: '#FCFCFC', 
+  secondaryColor: '#6750A4',
+  backgroundColor: '#F8F5FF', 
   primaryTextColor: "#000000",
   activityIndicatorColor: '#0000f', 
   redPrimaryColor: '#B00000',
@@ -21,7 +21,6 @@ const FONT = {
   medium: "DMMedium",
   bold: "DMBold",
 };
-
 const SIZES = {
   xSmall: 10,
   small: 12,

@@ -1,23 +1,25 @@
 import { SafeAreaView } from "react-native-safe-area-context";
-import  {NormalCellComponent, EditingCellComponent } from "./cellComponent";
+import { Avatar, Card, List, Text, TextInput } from 'react-native-paper';
 import { containerStyles } from "../../../../styles/components.style";
 import { CustomButtonWithIcon } from "../../../common/shared/components";
 import { COLORS, ICONSIZE } from "../../../../constants/theme";
 import { useTranslation } from "react-i18next";
-import { Question } from "../../../../types/database";
 import { View } from "react-native";
 import { useState } from "react";
 import { FIRESTORE } from "../../../../firebaseConfig";
-import { showErrorToast, showSuccessToast } from "../../../../constants/toasts";
+import { QuestionEdit } from "../../../../types/localTypes/editTypes";
+import  EditingCellComponent  from "./cellComponent";
 
 interface RowComponentProps {
     id?: string;
     question: string;
     rightAnswer: string;
     trueFalseQuestion: string;
-    possibleAnswers: string;
+    possibleAnswers: string[];
 }
-  
+const LeftContent = props => <Avatar.Icon {...props} icon="jjj" />
+
+
 const RowComponent: React.FC<RowComponentProps> = ({
     id,
     question,
@@ -28,7 +30,7 @@ const RowComponent: React.FC<RowComponentProps> = ({
     const { t } = useTranslation();
     const questionCollection = FIRESTORE.collection('questions'); 
     const [editting, setEdditing] = useState(false);
-    const [changedData, setChangedData] = useState<Array<Question>>([]);
+    const [changedData, setChangedData] = useState<Array<QuestionEdit>>([]);
     const [trueFalseQuestionCase, setTrueFalseQuestionCase] = useState(Boolean(trueFalseQuestion));
   
     const addChangedData = (label: string, data: string | boolean) => {
@@ -37,7 +39,7 @@ const RowComponent: React.FC<RowComponentProps> = ({
       const index = changedData.findIndex(
         (item) => Object.keys(item)[0] === label
       );
-      let updatedData: Question;
+      let updatedData: QuestionEdit;
       
       switch (label) {
         case 'question':
@@ -81,69 +83,107 @@ const RowComponent: React.FC<RowComponentProps> = ({
         });
 
         await batch.commit();
-        showSuccessToast(t('updatedSuccessfully'))
+        console.log(t('updatedSuccessfully'))
 
       } catch (error) {
-          showErrorToast(t('errorUpdate'))
-          console.error('Error updating password:', error.message);
+        console.log(t('errorUpdate'))
+        console.error('Error updating password:', error.message);
       }
   }
   
-    return (
-        <SafeAreaView style={containerStyles.borderContainer} key={id}>
-            {!editting ? (
-              <>
-                  <NormalCellComponent  data={question} label={'question'}/>
-                  <NormalCellComponent data={rightAnswer} label={'rightAnswer'}/>
-                  <NormalCellComponent data={trueFalseQuestion} label={'trueFalseQuestion'}/>
-                  <NormalCellComponent data={possibleAnswers} label={'possibleAnswers'} />
-                  <CustomButtonWithIcon
+  return (
+    <SafeAreaView key={id} style={{ backgroundColor: COLORS.backgroundColor }}>
+      {!editting ? (
+        <>
+          <Card contentStyle={{ backgroundColor: COLORS.backgroundColor }}>
+            <Card.Title title={t('question')} left={LeftContent} />
+            <Card.Content>
+              <Text variant="titleLarge">{question}</Text>
+              <List.Section>
+                <List.Item title={rightAnswer} left={() => <List.Icon icon="check" color={COLORS.greenPrimaryColor} />} />
+                {possibleAnswers.length > 0 ? (
+                  possibleAnswers.map((possibleAnswer: string, index: number) => (
+                    <List.Item
+                      key={index}
+                      title={possibleAnswer}
+                      left={() => <List.Icon color={COLORS.redPrimaryColor} icon="close" />}
+                    />
+                  ))
+                ) : (
+                  <></>
+                )}
+              </List.Section>
+              <CustomButtonWithIcon
                     onPress={() => setEdditing(true)}
                     iconName={'edit'}
                     iconType={'Material'}
                     iconSize={ICONSIZE.small}
                     iconColor={COLORS.primaryIconColor}
+              />
+            </Card.Content>
+          </Card>
+        </>
+      ) : (
+        <>
+        <Card contentStyle={{ backgroundColor: COLORS.backgroundColor }}>
+            <Card.Content>
+                <EditingCellComponent
+                data={question}
+                label={'question'}
+                editting={true}
+                onChangeText={(text: string) => addChangedData('question', text)}
+              />
+              <EditingCellComponent
+                data={rightAnswer}
+                label={'rightAnswer'}
+                editting={true}
+                onChangeText={(text: string) => addChangedData('rightAnswer', text)}
+              />
+              <EditingCellComponent
+                data={trueFalseQuestionCase.toString()}
+                label={'trueFalseQuestion'}
+                onValueChange={(value: boolean) => addChangedData('trueFalseQuestion', value)}
+              />
+              {possibleAnswers.length > 0 ? (
+                possibleAnswers.map((possibleAnswer: string, index: number) => (
+                  <EditingCellComponent
+                    key={index}
+                    data={possibleAnswer}
+                    label={((index+1).toString()+ ": ")}
+                    editting={true}
+                    onChangeText={(text: string) => addChangedData('possibleAnswers', text)}
                   />
-              </>
-            ) : (
-              <>
-                  <EditingCellComponent data={question} label={'question'} editting={true} onChangeText={(text: string)=> addChangedData('question', text)}/>
-                  <EditingCellComponent data={rightAnswer} label={'rightAnswer'} editting={true} onChangeText={(text: string)=> addChangedData('rightAnswer', text)}/>
-                  <EditingCellComponent data={trueFalseQuestionCase.toString()} label={'trueFalseQuestion'} onValueChange={(value: boolean)=> addChangedData('rightAnswer', value)}/>
-                  {!trueFalseQuestionCase ?(
-                    <EditingCellComponent data={possibleAnswers} label={'possibleAnswers'} editting={true} onChangeText={(text: string)=> addChangedData('possibleAnswers', text)}/>
-                  ): (
-                   <>
-                   </>
-                  )
-                }
-                <View style={containerStyles.bottom}>
-                  <CustomButtonWithIcon
-                    onPress={() => {
-                      setEdditing(false);
-                      editQuestions(
-                        id,
-                        
-                      );
-                      setChangedData([]);
-                    }}
-                    iconName={'save'}
-                    iconType={'Material'}
-                    iconSize={ICONSIZE.small}
-                    iconColor={COLORS.primaryIconColor}
-                  />
-                  <CustomButtonWithIcon
-                    onPress={() => setEdditing(false)}
-                    iconName={'cancel'}
-                    iconType={'Material'}
-                    iconSize={ICONSIZE.small}
-                    iconColor={COLORS.primaryIconColor}
-                  />
-                </View>
-              </>
-            )}
-        </SafeAreaView>
-      );
-    };
-    
-export default RowComponent;
+                ))
+              ) : (
+                <></>
+              )}
+            </Card.Content>
+          </Card>
+          
+          <View style={containerStyles.bottomHorizontal}>
+            <CustomButtonWithIcon
+              onPress={() => {
+                setEdditing(false);
+                editQuestions(id); // Assuming editQuestions function takes id and changedData as arguments
+                setChangedData([]);
+              }}
+              iconName={'save'}
+              iconType={'Material'}
+              iconSize={ICONSIZE.small}
+              iconColor={COLORS.primaryIconColor}
+            />
+            <CustomButtonWithIcon
+              onPress={() => setEdditing(false)}
+              iconName={'cancel'}
+              iconType={'Material'}
+              iconSize={ICONSIZE.small}
+              iconColor={COLORS.primaryIconColor}
+            />
+          </View>
+        </>
+      )}
+    </SafeAreaView>
+  );
+}
+
+export default RowComponent; 

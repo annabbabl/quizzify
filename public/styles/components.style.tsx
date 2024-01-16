@@ -8,6 +8,7 @@ const containerStyles =
           backgroundColor:COLORS.backgroundColor, 
           justifyContent: 'space-between',
           flex: 1,
+          textAlign:'center'
         },
         marginContainer: {
           alignItems: 'center',
@@ -94,6 +95,12 @@ const textStyles = {
     fontSize: SIZES.xLarge,
     fontWeight: 'bold',
     color: 'black',
+  }, 
+  link: {
+    fontSize: SIZES.xLarge,
+    fontWeight: 'bold',
+    color: 'black',
+    textAlign: 'center'
   }, 
   smallIconsText: {
     fontSize: SIZES.xLarge,

@@ -1,18 +1,20 @@
 
-import { Text, TouchableOpacity, TouchableOpacityProps, StyleSheet, View, Switch, TextProps, SwitchProps, ViewStyle} from "react-native";
+import { TouchableOpacity, TouchableOpacityProps, StyleSheet, View, Switch, TextProps, SwitchProps, Text as NT} from "react-native";
 import { MaterialIcons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { containerStyles, styles, textStyles } from "../../../styles/components.style"
 import React from "react";
 import * as Font from "expo-font";
 import { COLORS, SHADOWS } from "../../../constants";
+import { NativeBaseProvider, Text } from "native-base";
 
 interface CustomTexProps extends TextProps{
     label?: string;
-    bold?: boolean; 
+    boldFactor?: boolean; 
 }
-interface CustomSwithProps extends SwitchProps{
+interface CustomSwitchProps extends SwitchProps{
     switchValue?: boolean;
     onValueChange?: (value: boolean) => void;
+    switchSize: string; 
 }
 interface CustomButtonProps extends TouchableOpacityProps {
     label?: string;
@@ -29,23 +31,22 @@ interface CustomIconTouchable extends CustomButtonProps{
 
 const CustomTitle: React.FC<CustomTexProps>= ({label, ...rest}) =>{
     return(
-        <Text style={[textStyles.normalText, {marginTop: 50,marginBottom: 10}]} {...rest}>{label}</Text>
+        <NativeBaseProvider>
+            <Text fontSize="6xl" bold>{label}</Text>
+        </NativeBaseProvider>
     )
 }
 
-const CustomText: React.FC<CustomTexProps> = ({ label, bold, ...rest }) => {
+const CustomText: React.FC<CustomTexProps> = ({ label, boldFactor, ...rest }) => {
     return (
-      <Text style={bold ? textStyles.boldText : textStyles.normalText} {...rest}>
-        {label}
-      </Text>
-    );
-};
-  
-const CustomErrorText: React.FC<CustomTexProps> = ({ label, ...rest }) => {
-    return (
-      <Text style={textStyles.errorStyle} {...rest}>
-        {label}
-      </Text>
+        <NativeBaseProvider>
+
+        {boldFactor ? (
+            <Text fontSize="2xl" bold >{label}</Text>
+        ): (
+            <Text fontSize="2xl" >{label}</Text>
+        )}
+        </NativeBaseProvider>
     );
 };
   
@@ -53,11 +54,10 @@ const CustomErrorText: React.FC<CustomTexProps> = ({ label, ...rest }) => {
 const CustomButton: React.FC<CustomButtonProps> = ({ label,small,  ...rest }) =>{
     return (
         <TouchableOpacity  style={[styles.button, SHADOWS.middle]}{...rest}>
-            <Text style={small ? styles.buttonTextXS: styles.buttonTextXL}>{label}</Text>
+            <NT style={small ? styles.buttonTextXS: styles.buttonTextXL}>{label}</NT>
         </TouchableOpacity>
     )
 }
-
 const CustomButtonWithIcon: React.FC<CustomIconTouchable> = ({ label, iconType, iconName, iconSize, iconColor,  ...rest }) =>{
     return (
         <TouchableOpacity {...rest}>           
@@ -68,7 +68,7 @@ const CustomButtonWithIcon: React.FC<CustomIconTouchable> = ({ label, iconType, 
                     ) : (
                     <MaterialCommunityIcons name={iconName} size={iconSize} color={iconColor}style={{ marginRight: 10 }} />
                     )}
-                <Text style={textStyles.smallIconsText}>{label}</Text>
+                <NT style={textStyles.smallIconsText}>{label}</NT>
             </View>
             ) : (
             <View style={containerStyles.iconButtonCotainer}>
@@ -79,28 +79,38 @@ const CustomButtonWithIcon: React.FC<CustomIconTouchable> = ({ label, iconType, 
                     )}
             </View>
             )}
+        </TouchableOpacity> 
+    )
+}
+
+const CustomLink: React.FC<CustomButtonProps> = ({ label,onPress,  ...rest }) =>{
+    return (
+        <TouchableOpacity {...rest} onPress={onPress}>
+            <NT style={textStyles.boldText}>{label}</NT>
         </TouchableOpacity>
     )
 }
 
-const CustomLink: React.FC<CustomButtonProps> = ({ label, ...rest }) =>{
+const CustomSwitch: React.FC<CustomSwitchProps> = ({
+    switchValue,
+    onValueChange,
+    switchSize = 'sm' || 'med' || 'large',
+    ...rest
+  }) => {
+    const actualSize: number = switchSize === 'sm' ? 5 : switchSize === 'med' ? 8 : 12;
+  
     return (
-        <TouchableOpacity {...rest}>
-            <Text style={styles.link}>{label}</Text>
-        </TouchableOpacity>
-    )
-}
-
-const CustomSwitch: React.FC<CustomSwithProps> = ({ switchValue, onValueChange, ...rest }) =>{
-    return (
-    <Switch
-        trackColor={{ false: COLORS.redPrimaryColor, true:  COLORS.greenPrimaryColor }}
+      <Switch
+        trackColor={{ false: COLORS.redPrimaryColor, true: COLORS.greenPrimaryColor }}
         thumbColor={switchValue ? COLORS.redPrimaryColor : COLORS.greenSecondaryColor}
         onValueChange={onValueChange}
-        value={switchValue} {...rest}
-    />
+        style={{ transform: [{ scaleX: (actualSize/ 10) }, { scaleY: (actualSize / 10) }] }}
+        value={switchValue}
+        {...rest}
+      />
     );
-};
+  };
+
 const HeaderRectangle: React.FC<CustomTexProps> = ({ label,...rest }) =>{
     return (
     <View style={rectangleStyles.rectangleParent} {...rest}>
@@ -160,7 +170,6 @@ export{
     CustomButton, 
     CustomButtonWithIcon, 
     CustomTitle,
-    CustomErrorText,
     CustomText, 
     CustomLink, 
     HeaderRectangle, 

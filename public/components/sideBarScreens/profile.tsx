@@ -1,17 +1,19 @@
 
-import { ActivityIndicator, Image, TextInput, View } from "react-native";
-import {containerStyles, imageStyles, styles} from "../../styles/components.style";
+import { ActivityIndicator, View } from "react-native";
+import { NativeBaseProvider, Text } from "native-base";
+import {containerStyles } from "../../styles/components.style";
 import '../../constants/i18next'
 import { SafeAreaView } from 'react-native-safe-area-context';
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { updatePassword, updateProfile } from "firebase/auth";
-import { CustomButton, CustomLink, CustomText } from "../common/shared/components";
-import { COLORS, IMAGES, SHADOWS } from "../../constants";
+import { CustomButton } from "../common/shared/components";
+import { COLORS } from "../../constants";
 import { FIREBASE_AUTH, FIRESTORE } from "../../firebaseConfig";
-import { User } from '../../types/database'
-import { showErrorToast, showSuccessToast } from "../../constants/toasts";
+import { UserEdit } from "../../types/localTypes/editTypes";
+import { Avatar, Card, TextInput } from "react-native-paper";
 
+const LeftContent = props => <Avatar.Icon {...props} icon="account" />
 
 const Profile = ({ navigation, setSettingChange }) => {
     const { t } = useTranslation();
@@ -25,17 +27,13 @@ const Profile = ({ navigation, setSettingChange }) => {
     const [password, setPassword] = useState("");
     const [loading, setLoading] = useState(false);
   
-    const changeUserSettings = () => {
-        setSettingChangeLocal(!settingChangeLocal);
-    };
-  
     const updateUserSettings = async() => {
       if (currentUser) {
         setLoading(true); 
         updateProfile(currentUser, { displayName: username })
           .then(() => {
 
-            const updatedUserData : User = {
+            const updatedUserData : UserEdit = {
                 email: email,
                 username: username,
                 password: password
@@ -44,23 +42,23 @@ const Profile = ({ navigation, setSettingChange }) => {
             usersCollection.doc(currentUser.uid).update(updatedUserData)
                 .then(() => {
                     console.log('Document successfully updated!');
-                    showSuccessToast(t('userSettingsupdatedSuccessfully'))
+                    console.log(t('userSettingsupdatedSuccessfully'))
                     setSettingChangeLocal(!settingChangeLocal);
                     setSettingChange(!setSettingChange);
                 })
                 .catch((error) => {
                     console.error('Error updating document:', error);
-                    showErrorToast(t('userSettingsUpdateError'))
+                    console.log(t('userSettingsUpdateError'))
                 }).finally(() => {
                     setLoading(false); 
                 });
           })
           .catch((error) => {
             console.error("Error updating user profile:", error.message);
-            showErrorToast(t('userSettingsUpdateError'))
+            console.log(t('userSettingsUpdateError'))
           }).finally(() => {
             setLoading(false); 
-            setSettingChangeLocal(!settingChangeLocal);
+            setSettingChangeLocal(false)
           });
       }
     };
@@ -72,7 +70,7 @@ const Profile = ({ navigation, setSettingChange }) => {
             }
             await updatePassword(currentUser, password);
 
-            const updatedUser : User = {
+            const updatedUser : UserEdit = {
                 id: currentUser.uid,
                 email: email,
                 username: username,
@@ -83,18 +81,19 @@ const Profile = ({ navigation, setSettingChange }) => {
             usersCollection.doc(currentUser.uid).update(updatedUser)
                 .then(() => {
                     console.log('Document successfully updated!');
-                    showSuccessToast(t('userPasswordsUpdateSuccess'))
+                    console.log(t('userPasswordsUpdateSuccess'))
                 })
                 .catch((error) => {
                     console.error('Error updating document:', error);
-                    showErrorToast(t('userPasswordUpdateError'))
+                    console.log(t('userPasswordUpdateError'))
                 });
             setSettingChangeLocal(!settingChangeLocal);
         } catch (error) {
-            showErrorToast(t('userPasswordUpdateError'))
+          console.log(t('userPasswordUpdateError'))
             console.error('Error updating password:', error.message);
         }finally{
             setLoading(false); 
+            setSettingChangeLocal(false)
         }
       };
 
@@ -103,7 +102,7 @@ const Profile = ({ navigation, setSettingChange }) => {
           setLoading(true); 
           const response = await FIREBASE_AUTH.signOut()
   
-          const loggedOutUserData : User = {
+          const loggedOutUserData : UserEdit = {
             loggedIn: false
           }
       
@@ -111,38 +110,40 @@ const Profile = ({ navigation, setSettingChange }) => {
             .then(() => {
                 console.log('Document successfully updated!');
                 console.log(response)
-                showSuccessToast(t('logoutSuccess'))
+                console.log(t('logoutSuccess'))
             })
             .catch((error) => {
                 console.error('Error updating document:', error);
-                showErrorToast(t('logoutError'))
+                console.log(t('logoutError'))
             });
         }catch(error: any){
           console.log(error, error)
-          showSuccessToast(t('logoutSuccess'))
+          console.log(t('logoutSuccess'))
         }finally{
           setLoading(false); 
+          setSettingChangeLocal(false)
         }
       }            
 
       return (
         <SafeAreaView style={containerStyles.container}>
+          <NativeBaseProvider>
           {!settingChangeLocal ? (
             <>
-                <View style = {{width: '80%'}}>
-                    <View style={[containerStyles.horizontalContainer1, SHADOWS.small]}>
-                        <CustomText label={(t('name') + ": ")} bold={true} />
-                        <CustomText label={currentUser.displayName} bold={false} />
-                    </View>
-                    <View style={[containerStyles.horizontalContainer1, SHADOWS.middle]}>
-                        <CustomText label={(t('email') + ": ")} bold={true} />
-                        <CustomText label={currentUser.email} bold={false} />
-                    </View>
-                </View>
-                <View style={containerStyles.bottom}>
-                    <Image source={IMAGES.LOGO} style={imageStyles.image1}/>
-                    <CustomButton label={t('changeUserSettings')} onPress={changeUserSettings} />
-                </View>
+             <Text fontSize="6xl" bold>{t('profile')}</Text>
+              <Card contentStyle={{ backgroundColor: 'white' }}>
+                <Card.Title title={currentUser.displayName} left={LeftContent} />
+                <Card.Content>
+                <View style={containerStyles.horizontalContainer1}>
+                      <Text fontSize="2xl" bold>{t('name') + ": "}</Text>
+                      <Text fontSize="2xl" bold>{currentUser.displayName}</Text>
+                  </View>
+                  <View style={containerStyles.horizontalContainer1}>
+                      <Text fontSize="2xl" bold>{t('email') + ": "}</Text>
+                      <Text fontSize="2xl" bold>{currentUser.email}</Text>
+                  </View>
+                </Card.Content>
+              </Card>
             </>
           ) : (
             <View style={containerStyles.container}>
@@ -150,40 +151,46 @@ const Profile = ({ navigation, setSettingChange }) => {
                 <ActivityIndicator size="large" color={COLORS.activityIndicatorColor} />
             ) : (
                 <>
-                    <CustomText label={(t('name') + ": ")} bold={true} />
                     <TextInput
-                        style={[styles.input1, SHADOWS.middle]}
-                        value={username}
-                        editable={true}
-                        placeholder={t('name')}
-                        onChangeText={(name) => setUsername(name)}
+                      label={(t('name'))}
+                      value={username}
+                      right={<TextInput.Icon icon="account" />}
+                      onChangeText={(username) => setUsername(username)}
+                      placeholder={currentUser.displayName}
                     />
-                    <CustomText label={(t('email') + ": ")} bold={true} />
                     <TextInput
-                        style={[styles.input1, SHADOWS.middle]}
-                        value={email}
-                        editable={true}
-                        placeholder={t('email')}
-                        onChangeText={(email) => setEmail(email)}
+                      value={email}
+                      label={(t('email'))}
+                      right={<TextInput.Icon icon="email" />}
+                      onChangeText={(email) => setEmail(email)}
+                      placeholder={currentUser.email}
                     />
-                    <CustomButton label={t('update')} onPress={updateUserSettings} />
-                    <CustomText label={(t('pw') + ": ")} bold={true} />
                     <TextInput
-                        style={[styles.input1, SHADOWS.middle]}
-                        editable={true}
-                        value={password}
-                        placeholder={t('pw')}
-                        onChangeText={(pw) => setPassword(pw)}
-                        secureTextEntry={true}
+                      label={(t('pw'))}
+                      value={password}
+                      secureTextEntry
+                      editable={true}
+                      right={<TextInput.Icon icon="email" />}
+                      onChangeText={(pw) => setPassword(pw)}
+                      placeholder={t('pw')}
                     />
                     <View style={containerStyles.bottom}>
+                        <CustomButton label={t('update')} onPress={updateUserSettings} />
                         <CustomButton label={t('changePW')} onPress={changeUserPassword} />
                     </View>
                 </>
               )}
             </View>
           )}
-        <CustomButton label={t('logOut')} onPress={handleLogout} />
+          {!settingChangeLocal ? (
+              <View style={containerStyles.bottom}>
+                <CustomButton label={t('changeUserSettings')} onPress={() =>setSettingChangeLocal(true)} />
+                <CustomButton label={t('logOut')} onPress={handleLogout} />
+              </View>
+            ):(<>
+            </>)
+          }
+          </NativeBaseProvider>
         </SafeAreaView>
       );
 }      

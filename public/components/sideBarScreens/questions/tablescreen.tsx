@@ -5,9 +5,9 @@ import { CustomText } from '../../common/shared/components';
 import { useTranslation } from "react-i18next";
 import '../../../constants/i18next'
 import { FIRESTORE } from '../../../firebaseConfig'
-import { Question } from '../../../types/database';
 import { QuestionScreenRouterProps } from '../../../navigation/routers';
 import RowComponent from './table/rowComponent';
+import { PossibleAnswerEdit, QuestionEdit } from '../../../types/localTypes/editTypes';
 
 
 const TableScreen = ({ editing }: QuestionScreenRouterProps) => {
@@ -16,33 +16,48 @@ const TableScreen = ({ editing }: QuestionScreenRouterProps) => {
 
     useEffect(() => {
       const questionCollection = FIRESTORE.collection('questions');
-  
-      const unsubscribe = questionCollection.onSnapshot((querySnapshot) => {
-        const updatedQuestions = querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+    
+      const unsubscribe = questionCollection.onSnapshot(async (querySnapshot) => {
+        const updatedQuestions = await Promise.all(
+          querySnapshot.docs.map(async (doc) => {
+            const questionData = { id: doc.id, ...doc.data() };
+            const possibleAnswersDoc = await doc.ref.collection('possibleAnswers').get();
+            const possibleAnswers = possibleAnswersDoc.docs.map((answerDoc) => answerDoc.data());
+    
+            return { ...questionData, possibleAnswers };
+          })
+        );
+    
         setQuestions(updatedQuestions);
       });
-  
+    
       return () => {
         unsubscribe();
       };
     }, []);
 
+    const getPossibleAsnwers = (correspondingQuestion: QuestionEdit) => {
+      console.log(correspondingQuestion)
+      const possibleAnswer = correspondingQuestion.possibleAnswers.length> 0 ? correspondingQuestion.possibleAnswers.map((possibleAnswer: PossibleAnswerEdit)=> possibleAnswer.possibleAnswer): []
+      console.log(possibleAnswer)
+      return  possibleAnswer}; 
+
     return (
             <View >
               {questions.length > 0 ? (
                 <KeyboardAvoidingView behavior='padding'>
-                  {questions.map((question: Question) => (
+                  {questions.map((question: QuestionEdit) => (
                     editing ? (
                       <RowComponent key={question.id} question={question.question} rightAnswer={question.rightAnswer} trueFalseQuestion={question.trueOrFalseQuestion.toString()}
-                        possibleAnswers={question.possibleAnswers ? question.possibleAnswers.join(", "): ''} />
+                        possibleAnswers={getPossibleAsnwers(question)} />
                     ) : (
                       <RowComponent key={question.id}  question={question.question} rightAnswer={question.rightAnswer} trueFalseQuestion={question.trueOrFalseQuestion.toString()}
-                        possibleAnswers={question.possibleAnswers ? question.possibleAnswers.join(", "): ''} />
+                        possibleAnswers={getPossibleAsnwers(question)} />
                     )
                   ))}
                 </KeyboardAvoidingView>
               ) : (                
-                <CustomText label={t('noQuestionsAvailable')} bold={true}/>
+                <CustomText label={t('noQuestionsAvailable')} boldFactor={true}/>
               )}
         </View>
     );

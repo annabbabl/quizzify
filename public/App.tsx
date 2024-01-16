@@ -8,7 +8,6 @@ import HomeNavigator from "./navigation/HomeNavigator";
 import { useFonts } from "expo-font";
 import Toast from "react-native-toast-message";
 
-
 const App = () => {
   const [loggedIn, setLoggedIn] = useState(false);
   const [settingChange, setSettingChange] = useState(false); 

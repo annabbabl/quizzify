@@ -1,15 +1,14 @@
 import { useTranslation } from "react-i18next";
-import { TextInput, TextInputProps, View , Text} from "react-native";
+import { TextInputProps, View , StyleSheet} from "react-native";
 import { containerStyles, styles } from "../../../../styles/components.style";
-import { SHADOWS, SIZES } from "../../../../constants";
+import { SHADOWS } from "../../../../constants";
 import { CustomSwitch, CustomText } from "../../../common/shared/components";
 import React from "react";
+import { TextInput } from "react-native-paper";
+import { NativeBaseProvider, Text } from "native-base";
 
 
-interface NormalCellComponentProps extends TextInputProps{
-    label: string, 
-    data: string, 
-}
+
 interface EditingCellComponentProps extends TextInputProps{
     label: string, 
     data: string, 
@@ -17,25 +16,6 @@ interface EditingCellComponentProps extends TextInputProps{
     onChangeText?: (text: string) => void;
     onValueChange?: (text: boolean) => void;
 }
-
-const NormalCellComponent: React.FC<NormalCellComponentProps> = ({ data, label = 'id' || 'question' || 'rightAnswer' || 'trueFalseQuestion' || 'possibleAnswers' || 'createdAt' }) => {
-  const { t } = useTranslation();
-
-  return (
-    <>
-      <CustomText bold={true} label={`${t(label)}: `} />
-      <View style={{alignItems:"center"}}>
-        {label === 'possibleAnswers' ? (
-          <View style={containerStyles.container}>
-            <CustomText label={data} />
-          </View>
-        ) : (
-          <Text style={{fontSize: SIZES.xLarge}}>{data}</Text>
-        )}
-      </View>
-    </>
-  );
-};
 
 const EditingCellComponent: React.FC<EditingCellComponentProps> = ({
   onChangeText,
@@ -49,7 +29,9 @@ const EditingCellComponent: React.FC<EditingCellComponentProps> = ({
   return (
     <View style={containerStyles.horizontalContainer2}>
       <View style={{ width: '40%' }}>
-        <CustomText label={t(label)} />
+        <NativeBaseProvider>
+          <Text fontSize="2xl" bold>{t(label)}</Text>
+        </NativeBaseProvider>
       </View>
       <View style={{ width: '60%' }}>
         {label === 'possibleAnswers' ? (
@@ -63,18 +45,16 @@ const EditingCellComponent: React.FC<EditingCellComponentProps> = ({
               />
           </View>))
         ): label === 'trueFalseQuestion' ? (
-          <CustomSwitch switchValue={Boolean(data)} onValueChange={onValueChange}/>
+          <CustomSwitch switchValue={Boolean(data)} switchSize="med" onValueChange={onValueChange}/>
         ): (
-          <TextInput
-            style={[styles.input1, SHADOWS.middle]}
-            placeholder={data}
-            editable={editting}
-            onChangeText={onChangeText}
-          />
+            <TextInput
+                placeholder={data}
+                style={{ marginBottom: 20}}
+            />   
         )}
       </View>
     </View>
   );
 };
 
-export { NormalCellComponent, EditingCellComponent };
+export default EditingCellComponent

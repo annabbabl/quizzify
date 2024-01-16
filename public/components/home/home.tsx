@@ -1,13 +1,14 @@
-import {Image, ImageBackground, View } from "react-native";
+import {ActivityIndicator, Image, ImageBackground, View } from "react-native";
 import React, { useEffect, useState } from "react";
-import { CustomButton, HeaderRectangle } from "../../components/common/shared/components";
+import { CustomButton } from "../../components/common/shared/components";
 import { useTranslation } from "react-i18next";
 import '../../constants/'
 import {containerStyles, imageStyles} from "../../styles/components.style";
-import { IMAGES } from "../../constants";
+import { COLORS, IMAGES } from "../../constants";
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { FIREBASE_AUTH, FIRESTORE } from "../../firebaseConfig";
-import { User } from "../../types/database";
+import { UserEdit } from "../../types/localTypes/editTypes";
+import { NativeBaseProvider, Text } from "native-base";
 
 
 
@@ -20,7 +21,7 @@ const Home = () => {
 
 
     useEffect(() => {
-      const updatedUserData : User = {
+      const updatedUserData : UserEdit = {
         loggedIn: true
       }
 
@@ -38,20 +39,22 @@ const Home = () => {
 
     return (
         <SafeAreaView style={containerStyles.container}>
+          <NativeBaseProvider>
           {!loading ? (
-            <ImageBackground source={IMAGES.BACKGROUND} resizeMethod="resize"style={imageStyles.backgroundImage}>
-              <HeaderRectangle label={(t('welcomeName') + FIREBASE_AUTH.currentUser.displayName)}/>
-              <Image source={IMAGES.LOGO} style={imageStyles.image1}/>
-              <View style={containerStyles.bottom}>
-                <CustomButton label={t('startGame')} />
-                <CustomButton label={t('joynGame')} />
-              </View>
-            </ImageBackground>
-          ): (
             <>
+            <View style={containerStyles.container}>
+              <Text fontSize="6xl" bold>{t('welcomeName')}</Text>
+             <Image source={IMAGES.LOGO} style={imageStyles.image1}/>
+            </View>
+            <View style={containerStyles.bottom}>
+              <CustomButton label={t('startGame')} />
+              <CustomButton label={t('joynGame')} />
+            </View>
             </>
+          ): (
+            <ActivityIndicator size="large" color={COLORS.activityIndicatorColor} />
           )}
-          
+          </NativeBaseProvider>
         </SafeAreaView>
     );
 };

@@ -7,6 +7,7 @@ import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { CustomButton, HeaderRectangle } from "../../common/shared/components";
 import { IMAGES } from "../../../constants";
+import { NativeBaseProvider, Text } from "native-base";
 
 
 const Welcome = ({navigation}) => {
@@ -19,11 +20,15 @@ const Welcome = ({navigation}) => {
   return (
     <SafeAreaView style={containerStyles.container}>
       <ImageBackground source={IMAGES.BACKGROUND} resizeMethod="scale" resizeMode="cover" style={imageStyles.backgroundImage} >
-        <HeaderRectangle label={t('welcome')}/>
-        <Image source={IMAGES.LOGO} style={imageStyles.image1}/>
-        <View style={containerStyles.bottom}>
-          <CustomButton label={t('clickMe')} onPress={navigateToLogin}/>
-        </View>
+        <NativeBaseProvider>
+          <View style={containerStyles.container}>
+            <Text fontSize="6xl" bold>{t('welcome')}</Text>
+            <Image source={IMAGES.LOGO} style={imageStyles.image1}/>
+          </View>
+          <View style={containerStyles.bottom}>
+              <CustomButton label={t('clickMe')} onPress={navigateToLogin}/>
+          </View>
+        </NativeBaseProvider>
       </ImageBackground>
     </SafeAreaView>
   );

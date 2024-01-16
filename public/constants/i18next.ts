@@ -148,6 +148,7 @@ i18next
                     email: 'Email',
                     pw: 'Passwort', 
                     name: 'Name', 
+                    password: 'Passwort',
                     changeUserSettings: 'Profileinstellungen Ändern',
                     userSettingsupdatedSuccessfully: 'Profileinstellungen erfolgreich Geupdate',
                     userSettingsUpdateError: 'Ein Fehler ist bei dem Update der Profileinstellungen aufgetretten', 
