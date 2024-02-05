@@ -39,6 +39,7 @@ i18next
                     answers:'Answers',
                     back:'Back',
                     availiable:'availiable', 
+                    missingInformation: 'Informationen is Missing',
 
 
                     
@@ -57,7 +58,7 @@ i18next
                     
                     //home screen
                     startGame: 'Start Game',
-                    joynGame: 'Joyn Game',
+                    joynGame: 'Join Game',
                     welcomeName: 'Welcome ',
 
                     //side bar
@@ -194,7 +195,23 @@ i18next
                     buttonAlign:'Button Align',
 
                     //imageFragment
-                    noImagesAvailable: 'No images available'
+                    noImagesAvailable: 'No images available', 
+                    imgUploadedSuccessfully: 'Image Uploaded successfully', 
+                    enterImageFirst: 'Pick an Image First',
+
+
+                    //initialize game
+                    noTemplate: 'No Template availiable',
+                    wantToContinue:'Do you want to Continue', 
+                    enterQuizName:'Enter Quizname',
+                    enterAmountOfQuestions: 'Enter amount Of Questions', 
+                    forThis:'for this', 
+                    youCanSelect:'You Can Select', 
+                    quizInitSucc: 'Quiz initalized',
+                    quizInitError: 'Error while initializing the Quiz', 
+                    startsIn: 'Start in', 
+                    gameCode: 'Game Code', 
+                    quizCodeNotInit: 'Quiz Not Initialized'
 
                 }
             },
@@ -223,6 +240,7 @@ i18next
                     element: 'Element',
                     answers:'Antworten',
                     availiable:'verfügbar', 
+                    missingInformation: 'Informationen fehlen', 
 
 
                     //home screen
@@ -386,8 +404,12 @@ i18next
                     enterQuizName:'Quizname eigeben',
                     enterAmountOfQuestions: 'Wie viele Fragen soll das Quiz beinhalten?', 
                     forThis:'Für', 
-                    youCanSelect:'Kannst du '
-
+                    youCanSelect:'Kannst du ', 
+                    quizInitSucc: 'Quiz initiiert',
+                    quizInitError: 'Fehler beim initiieren des Quizzes',
+                    startsIn: 'Startet In', 
+                    gameCode: 'Spielecode', 
+                    quizCodeNotInit: 'Quiz Wurde nicht initialisiert'
 
                 }
             }

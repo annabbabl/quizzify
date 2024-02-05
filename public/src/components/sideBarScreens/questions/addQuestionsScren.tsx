@@ -12,7 +12,7 @@ import { ScrollView } from 'react-native-gesture-handler';
 import { CheckIcon, NativeBaseProvider, Select, Text} from 'native-base';
 import { List, TextInput } from 'react-native-paper';
 import { QuestionScreenRouterProps } from '../../../navigation/routers';
-import { FIREBASE_AUTH, FIRESTORE } from '../../../../firebaseConfig';
+import { FIREBASE_AUTH, FIRESTORE } from '../../../firebase/firebaseConfig';
 
 
 const AddQuestions = ({categories, adding, setModalVisibilty, setIsFetching}: QuestionScreenRouterProps) => {

@@ -22,7 +22,6 @@ const HomeNavigator: React.FC<SideBarRouterProps & { navigation?: DrawerNavigati
     navigation?.navigate(screenName, { editing: false, adding: false });
   };
   const [, setSettingChange] = useState(false); // Track if quiz is being initiated
-  console.log(initiatingQuiz, 728123)
 
   return (
     <Drawer.Navigator drawerContent={(props) => <Sidebar {...props} />} >

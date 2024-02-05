@@ -39,7 +39,12 @@ type TemplateEdit = {
     direction?: 'row' | 'column'
 }
 
-
+type QuizInitDataEdit = {
+    quizName?: string, 
+    quizCategory? : string, 
+    numberOfQuestions?: number, 
+    questions: Array<QuestionEdit>
+}
 
 export {
     ImagesEdit,
@@ -47,4 +52,5 @@ export {
     QuestionEdit, 
     PossibleAnswerEdit,
     TemplateEdit,
+    QuizInitDataEdit
 }

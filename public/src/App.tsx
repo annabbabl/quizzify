@@ -6,7 +6,7 @@ import AuthNavigator from "./navigation/AuthNavigator";
 import HomeNavigator from "./navigation/HomeNavigator";
 import { useFonts } from "expo-font";
 import Toast from "react-native-toast-message";
-import { FIREBASE_AUTH } from "../firebaseConfig";
+import { FIREBASE_AUTH } from "./firebase/firebaseConfig";
 
 const App = () => {
   const [loggedIn, setLoggedIn] = useState(false);

@@ -9,7 +9,7 @@ import { COLORS, ICONSIZE } from '../../../../constants/theme';
 import { deleteObject, getDownloadURL, ref, uploadBytesResumable } from 'firebase/storage';
 import { Images } from '../../../../types/databaseTypes';
 import { ImagesEdit } from '../../../../types/localTypes/editTypes';
-import { FIREBASE_AUTH, FIREBASE_STORAGE, FIRESTORE } from '../../../../../firebaseConfig';
+import { FIRESTORE, FIREBASE_AUTH, FIREBASE_STORAGE } from '../../../../firebase/firebaseConfig';
 
 const ImageFragment = ({
   setImageFragmentVisibility,

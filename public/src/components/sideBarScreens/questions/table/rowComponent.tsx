@@ -10,7 +10,7 @@ import { QuestionEdit } from "../../../../types/localTypes/editTypes";
 import  EditingCellComponent  from "./cellComponent";
 import { CheckIcon, Select } from "native-base";
 import React from "react";
-import { FIRESTORE } from "../../../../../firebaseConfig";
+import { FIRESTORE } from "../../../../firebase/firebaseConfig";
 
 interface RowComponentProps {
     id?: string;

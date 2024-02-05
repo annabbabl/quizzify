@@ -11,7 +11,7 @@ import { CustomButton } from "../common/shared/components";
 import { COLORS } from "../../constants";
 import { UserEdit } from "../../types/localTypes/editTypes";
 import { Avatar, Card, TextInput } from "react-native-paper";
-import { FIREBASE_AUTH, FIRESTORE } from "../../../firebaseConfig";
+import { FIREBASE_AUTH, FIRESTORE } from "../../firebase/firebaseConfig";
 
 const LeftContent = props => <Avatar.Icon {...props} icon="account" />
 

@@ -1,5 +1,6 @@
 import firebase from 'firebase/compat/app'
 import { TemplateBackground, Container } from './localTypes/templateTypes';
+import { QuestionEdit } from './localTypes/editTypes';
 
 type Timestamp = firebase.firestore.Timestamp;
 
@@ -60,6 +61,21 @@ type Images = AddImages & {
     id?:string
 }
 
+type QuizInitData = {
+    gameCode: string,
+    quizName: string, 
+    quizCategory? : string, 
+    numberOfQuestions: number, 
+    createdBy: string, 
+    createdAt: Timestamp
+    questions: Array<QuestionEdit>
+}
+
+type QuizInit = QuizInitData & {
+    id?:string
+}
+
+
 export { 
     UserAdd, 
     UserDatabase,
@@ -70,5 +86,7 @@ export {
     TemplateAdd,
     TemplateDatabase, 
     AddImages, 
-    Images
+    Images, 
+    QuizInit,
+    QuizInitData
 }

@@ -8,8 +8,8 @@ import { COLORS, IMAGES } from "../../constants";
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { UserEdit } from "../../types/localTypes/editTypes";
 import { NativeBaseProvider, Text } from "native-base";
-import { FIREBASE_AUTH, FIRESTORE } from "../../../firebaseConfig";
 import { AuthRouterProps, SideBarRouterProps } from "../../navigation/routers";
+import { FIRESTORE, FIREBASE_AUTH } from "../../firebase/firebaseConfig";
 
 
 
@@ -21,8 +21,7 @@ const Home = ({ navigation, setLoggedIn }: AuthRouterProps & SideBarRouterProps)
     const [loading, setLoading] = useState(false)
     const [popoverVisible, setPopoverVisible] = useState(false);
     const [enablement, setEnablement] = useState(true);
-    const [initiatingQuiz, setInitiatingQuiz] = useState(false); 
-
+    const [initiatingQuiz, setInitiatingQuiz] = useState(false);     
 
 
     useEffect(() => {
@@ -49,6 +48,27 @@ const Home = ({ navigation, setLoggedIn }: AuthRouterProps & SideBarRouterProps)
         setInitiatingQuiz(true)
         navigation.navigate('InitializeQuizNavigatorScreens');
       }
+      // const unsubscribe = questionCollection.onSnapshot(async (querySnapshot) => {
+      //   const updatedQuestions = await Promise.all(
+      //     querySnapshot.docs.map(async (doc) => {
+      //       const questionData = { id: doc.id, ...doc.data() };
+      //       const possibleAnswersDoc = await doc.ref.collection('possibleAnswers').get();
+      //       const possibleAnswers = possibleAnswersDoc.docs.map((answerDoc) => answerDoc.data());
+    
+      //       return { ...questionData, possibleAnswers };
+      //     })
+      //   );
+  
+      //   updatedQuestions.sort((q1: QuestionEdit, q2: QuestionEdit) => (q1 && q1.category ? q1.category: '').localeCompare(q2 && q2.category ? q2.category: ''));
+      //   setQuestions(updatedQuestions);
+    
+      //   setCategories(
+      //     updatedQuestions
+      //       ? Array.from(new Set(updatedQuestions.map((question: QuestionEdit) => question.category)))
+      //       : []
+      //   );
+      // }
+
     };
 
     return (

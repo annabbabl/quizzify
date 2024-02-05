@@ -17,7 +17,7 @@ import { defaultTemplatePreviewStyle, answerContainerStylesArray, questionContai
 import { CustomButtonWithIcon } from '../../common/shared/components';
 import { ICONSIZE } from '../../../constants/theme';
 import { ImagesEdit, TemplateEdit } from '../../../types/localTypes/editTypes';
-import { FIREBASE_AUTH, FIRESTORE } from '../../../../firebaseConfig';
+import { FIRESTORE, FIREBASE_AUTH } from '../../../firebase/firebaseConfig';
 
 
 const TemplateScreen = ({ }: TemplateScreenProps) => {

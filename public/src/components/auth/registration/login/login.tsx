@@ -5,11 +5,11 @@ import { COLORS, IMAGES } from "../../../../constants"
 import '../../../../constants/i18next'
 import { CustomButton, CustomLink, CustomTitle } from '../../../common/shared/components';
 import { signInWithEmailAndPassword } from 'firebase/auth';
-import { FIREBASE_AUTH } from '../../../../../firebaseConfig';
 import { AuthRouterProps } from '../../../../navigation/routers';
 import { useTranslation } from 'react-i18next';
 import { TextInput } from 'react-native-paper';
 import { NativeBaseProvider } from 'native-base';
+import { FIREBASE_AUTH } from '../../../../firebase/firebaseConfig';
 
 
 

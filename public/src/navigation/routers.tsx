@@ -79,6 +79,7 @@ interface TemplateFragmentProps extends TemplateScreenProps, RootLayout {
 }
 interface EnteredQuizData extends RootLayout {
     quizName? : string,
+    gameCode? : string,
     setQuizName?: React.Dispatch<React.SetStateAction<string>>;
     quizCategory? : string; 
     setQuizCategory?: React.Dispatch<React.SetStateAction<string>>;
@@ -86,11 +87,24 @@ interface EnteredQuizData extends RootLayout {
     visibility?: boolean; 
     setInitiatingQuiz?:React.Dispatch<React.SetStateAction<boolean>>;
     setAmountOfQuestions?:React.Dispatch<React.SetStateAction<number>>;
+    setQuestions?:React.Dispatch<React.SetStateAction<Array<QuestionEdit>>>;
+    setGameCode?:React.Dispatch<React.SetStateAction<string>>;
+    setGameStarted?:React.Dispatch<React.SetStateAction<boolean>>;
     initiatingQuiz?:boolean; 
     redirectToCategories?: boolean; 
+    gameStarted?:boolean; 
+    gameQuestions?: Array<QuestionEdit>
+
 
     setTextInputFragmentvisibility?: React.Dispatch<React.SetStateAction<boolean>>;
     setColorPickerViewVisibilty?: React.Dispatch<React.SetStateAction<boolean>>;
+}
+interface GameNavigatorProps{
+    quizName? : string,
+    gameCode?: string, 
+    gameQuestions?: Array<QuestionEdit>,
+    gameStarted?: boolean
+    setGameStarted?:React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export { AuthRouterProps, 
@@ -98,6 +112,7 @@ export { AuthRouterProps,
         SideBarRouterProps,
         TemplateScreenProps,
         TemplateFragmentProps, 
-        EnteredQuizData
+        EnteredQuizData, 
+        GameNavigatorProps
     };
   

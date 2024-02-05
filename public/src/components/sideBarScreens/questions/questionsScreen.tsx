@@ -14,8 +14,9 @@ import { Filter } from '../../../types/localTypes/uiTypes';
 import SetFilterComponent from './filterComponent';
 import { Searchbar } from 'react-native-paper';
 import { SideBarRouterProps } from '../../../navigation/routers';
-import { FIREBASE_AUTH, FIRESTORE } from '../../../../firebaseConfig';
 import { View } from 'react-native'; 
+import { FIRESTORE, FIREBASE_AUTH } from '../../../firebase/firebaseConfig';
+import { capitalizeKeys } from '../../../appFunctions/utils';
 
 
 
@@ -25,8 +26,8 @@ const QuestionsScreen = ({editing, adding}: SideBarRouterProps) => {
     const {t} = useTranslation()
     const [, setAdding] = useState(false);
     const [filter, setFilter] = useState<Filter>({});
-    const [questions, setQuestions] = useState([]);
-    const [categories, setCategories] = useState([]);
+    const [questions, setQuestions] = useState([] as QuestionEdit[]);
+    const [categories, setCategories] = useState([] as string[]);
     const [filterModalVisibility, setFilterModalVisibilty] = useState(false);
     const [addModalVisibility, setAddModalVisibilty] = useState(false);
     const [isFetching, setIsFetching] = useState(true);
@@ -43,7 +44,9 @@ const QuestionsScreen = ({editing, adding}: SideBarRouterProps) => {
             const possibleAnswersDoc = await doc.ref.collection('possibleAnswers').get();
             const possibleAnswers = possibleAnswersDoc.docs.map((answerDoc) => answerDoc.data());
     
-            return { ...questionData, possibleAnswers };
+            const capitalizedQuestionData = capitalizeKeys(questionData);
+
+            return { ...capitalizedQuestionData, possibleAnswers };
           })
         );
   3

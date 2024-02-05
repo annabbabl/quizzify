@@ -1,3 +1,4 @@
+import { QuestionEdit } from "../types/localTypes/editTypes";
 import { Container } from "../types/localTypes/templateTypes";
 import { ChoosenCss, Offset } from "../types/localTypes/uiTypes";
 import { StyleSheet } from 'react-native';
@@ -89,10 +90,76 @@ const updateStyle = (property: string, styleValue: string | number | {}, touched
   touchedContainer.style = {... touchedContainer.style, [property]: styleValue}
 }
 
+const generateGameCode = () => {
+  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+  let code = '';
+  for (let i = 0; i < 5; i++) {
+    const randomIndex = Math.floor(Math.random() * characters.length);
+    code += characters.charAt(randomIndex);
+  }
+  return code;
+};
+
+const getRandomQuestions = (arr: Array<QuestionEdit>, numElements: number) =>{
+  const randomIndices = [];
+  const selectedElements = [];
+
+  while (randomIndices.length < numElements) {
+    const randomIndex = Math.floor(Math.random() * arr.length);
+    if (!randomIndices.includes(randomIndex)) {
+      randomIndices.push(randomIndex);
+    }
+  }
+
+  // Use random indices to select elements
+  randomIndices.forEach((index) => {
+    selectedElements.push(arr[index]);
+  });
+
+  return selectedElements;
+}
+
+const capitalizeFirstLetter = (word: string) =>  {
+  if (word.length === 0) {
+    return word; // Return the original word if it's an empty string
+  }
+  return word.charAt(0).toUpperCase() + word.slice(1);
+}
+
+const capitalizeKeys = (object: any) => {
+  if (typeof object !== 'object' || object === null) {
+    return object;
+  }
+
+  const capitalizedObject: any = {};
+
+  for (const key in object) {
+    if (object.hasOwnProperty(key)) {
+      const value = object[key];
+      if (typeof value === 'string') {
+        if (['question', 'category', 'rightAnswer'].includes(key)) {
+          capitalizedObject[key] = capitalizeFirstLetter(value);
+        } else {
+          capitalizedObject[key] = value;
+        }
+      } else {
+        capitalizedObject[key] = capitalizeKeys(value);
+      }
+    }
+  }
+
+  return capitalizedObject;
+}
+
+
 export {
   convertStylesToStyleSheet, 
   convertStyleSheetToStyles, 
   convertStyleSheetToForStyles, 
   removeDuplicateObjects, 
-  updateStyle
+  updateStyle, 
+  generateGameCode, 
+  getRandomQuestions, 
+  capitalizeFirstLetter, 
+  capitalizeKeys
 };  
