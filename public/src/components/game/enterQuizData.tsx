@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { ActivityIndicator, ImageBackground, KeyboardAvoidingView, View, } from 'react-native';
 import { useTranslation } from "react-i18next";
 import "../../constants/i18next"
@@ -8,24 +8,32 @@ import { containerStyles, imageStyles } from '../../styles/components.style';
 import { COLORS, IMAGES } from '../../constants';
 import { CustomButton, CustomLink, CustomText, CustomTitle } from '../common/shared/components';
 import { EnteredQuizData } from '../../navigation/routers';
-import { Avatar, Card, IconButton } from 'react-native-paper';
+import { Avatar, Card } from 'react-native-paper';
 import NumericInput from 'react-native-numeric-input'
 import { QuizInitData } from '../../types/databaseTypes';
 import firebase from 'firebase/compat';
-import { FIRESTORE, FIREBASE_AUTH } from '../../firebase/firebaseConfig';
 import { generateGameCode, getRandomQuestions } from '../../appFunctions/utils';
 import { QuestionEdit } from '../../types/localTypes/editTypes';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import QRCode from 'react-native-qrcode-svg';
+import { NavigationProp } from "@react-navigation/native";
+import { FIREBASE_AUTH, FIRESTORE } from '../../firebase/firebaseConfig';
+import { RouteProp } from '@react-navigation/native';
 
 
-const NoTemplateScreen = ({navigation}) => {
+type InitProp = {
+  navigation: NavigationProp<any>;
+};
+
+
+const NoTemplateScreen = ({navigation}: InitProp) => {
   const {t} = useTranslation()
 
   const [loading, setLoading] = useState(false)
 
   return (
     <KeyboardAvoidingView behavior='padding' style={containerStyles.container}>
-      <ImageBackground source={IMAGES.WAVY_BACKGROUND} resizeMethod="scale" resizeMode="cover" style={imageStyles.backgroundImage}>
+      <ImageBackground source={IMAGES.WAVY_BACKGROUND} resizeMethod="scale"  style={imageStyles.backgroundImage}>
         <NativeBaseProvider>
         <View style={{alignItems:'center', marginTop: 15}}>
           <CustomTitle label={t('noTemplate')}/>
@@ -48,13 +56,13 @@ const NoTemplateScreen = ({navigation}) => {
           
 };
 
-const EnterNameScreen = ({ navigation, quizName, setQuizName, redirectToCategories }: EnteredQuizData) => {
+const EnterNameScreen = ({ navigation, quizName, setQuizName, redirectToCategories, initQuiz }: EnteredQuizData) => {
   const { t } = useTranslation();
 
   const [loading,] = useState(false);
 
   const navigateToNextScreen = () => {
-    if(quizName.length > 0) {
+    if( quizName && quizName.length > 0) {
       if (redirectToCategories) {
         navigation.navigate('InitializeQuizNavigatorScreens', { screen: 'EnterCategoryScreen' });
       } else {
@@ -72,26 +80,30 @@ const EnterNameScreen = ({ navigation, quizName, setQuizName, redirectToCategori
         source={IMAGES.WAVY_BACKGROUND}
         style={[containerStyles.container, imageStyles.backgroundImage]}
         resizeMethod="scale"
-        resizeMode="cover"
       >
         <NativeBaseProvider>
-          <View style={{ alignItems: 'center', marginTop: 15}}>
-            <CustomTitle label={t('enterQuizName')} />
-          </View>
-          <TextInput
-            label={t('name')}
-            value={quizName}
-            onChangeText={(quizName) => setQuizName?.(quizName)}
-            placeholder={t('name')}
-            style={{ marginTop: 30, marginBottom: 20, width: '80%' }}
-          />
+          {initQuiz ? (
+             <><View style={{ alignItems: 'center', marginTop: 15 }}>
+              <CustomTitle label={t('enterQuizName')} />
+            </View><TextInput
+                label={t('name')}
+                value={quizName}
+                onChangeText={(quizName) => setQuizName?.(quizName)}
+                placeholder={t('name')}
+                style={{ marginTop: 30, marginBottom: 20, width: '80%' }} /></>
+          ): (
+            <CustomTitle label={t('cantPlay')} />
+          )}
+         
           <View style={containerStyles.bottom}>
             {loading ? (
               <ActivityIndicator size='large' color={COLORS.activityIndicatorColor} />
             ) : (
               <>
                 <CustomLink label={t('backToHome')} onPress={() => { navigation?.navigate("Home") }} />
-                <CustomButton label={t('continue')} onPress={navigateToNextScreen} />
+                {initQuiz &&
+                  <CustomButton label={t('continue')} onPress={navigateToNextScreen} />
+                }
               </>
             )}
           </View>
@@ -102,14 +114,15 @@ const EnterNameScreen = ({ navigation, quizName, setQuizName, redirectToCategori
 };
 
 
-const EnterCategoryScreen = ({navigation, categories, quizCategory, setQuizCategory }: EnteredQuizData) => {
+const EnterCategoryScreen = ({navigation, categories, setQuizCategory }: EnteredQuizData) => {
     const {t} = useTranslation()
 
     const [loading, ] = useState(false)
+    const [defaultValue, setDefaultValue] = useState(categories?.[0])
    
     return (
       <SafeAreaView style={containerStyles.container}>
-        <ImageBackground source={IMAGES.WAVY_BACKGROUND} resizeMethod="scale" resizeMode="cover" style={imageStyles.backgroundImage}>
+        <ImageBackground source={IMAGES.WAVY_BACKGROUND} resizeMethod="scale"  style={imageStyles.backgroundImage}>
           <NativeBaseProvider>
           <View style={{alignItems:'center', marginTop: 15}}>
             <CustomTitle label={t('selectCategory')}/>
@@ -117,12 +130,13 @@ const EnterCategoryScreen = ({navigation, categories, quizCategory, setQuizCateg
           <Select 
             selectedValue={t('selectCategory')} 
             minWidth="200" 
-            accessibilityLabel={t('selectCategory')} 
-            placeholder={t('selectCategory')} 
+            aria-label={t('selectCategory')} 
+            placeholder={t('selectCategory')}
+            defaultValue={defaultValue}
             _selectedItem={{
               bg: "teal.600",
               endIcon: <CheckIcon size="5" />
-            }} mt={1} onValueChange={(category: string) => {setQuizCategory?.(category); console.log(category)}}>
+            }} mt={1} onValueChange={(category: string) => {setQuizCategory?.(category); setDefaultValue(defaultValue)}}>
             {categories?.map((category: string, index: number)=>
               <Select.Item label={category} value={category} key={index} />
             )}
@@ -151,18 +165,18 @@ const EnterAmountOfQuestions = ({
     quizName, 
     quizCategory, 
     questions, 
-    setQuestions
+    setGameQuestions
   }
     : EnteredQuizData) => {
     const {t} = useTranslation()
     const gamesCollection = FIRESTORE.collection('games'); 
 
-    const categoryQuestions = quizName && quizName.length > 0 ? questions.filter((question: QuestionEdit)=>{return question.category === quizCategory}): questions
-       
+    const categoryQuestions = quizCategory && quizCategory.length > 0 ? questions?.filter((question: QuestionEdit)=>{return question.category === quizCategory}): questions
     const [loading, setLoading] = useState(false)
-    const [numberOfQuestions,setAmountOfQuestions] = useState(questions.length)
+    const q = categoryQuestions ? categoryQuestions.length : questions?.length
+    const [numberOfQuestions, setAmountOfQuestions] = useState(q ? q : 0);
+    const [totalAmount, ] = useState((questions  ? questions.length : 0))
 
-    const [totalAmount, ] = useState(questions.length)
     
     const initGame = async () => {
       try {
@@ -174,50 +188,68 @@ const EnterAmountOfQuestions = ({
         }
 
         const gameCode = generateGameCode()
-        const randomizedQuestions = getRandomQuestions(categoryQuestions, numberOfQuestions)
+        const randomizedQuestions = getRandomQuestions((categoryQuestions ? categoryQuestions: []), numberOfQuestions)
 
         const quizInitData: QuizInitData = {
           gameCode: gameCode,
-          quizName: quizName, 
+          quizName: quizName ?  quizName : '', 
           quizCategory : quizCategory, 
           numberOfQuestions: numberOfQuestions, 
-          createdBy: FIREBASE_AUTH.currentUser.uid, 
+          createdBy: FIREBASE_AUTH?.currentUser?.uid ? FIREBASE_AUTH.currentUser.uid : '', 
           createdAt: firebase.firestore.Timestamp.now(),
-          questions: randomizedQuestions
+          questions: randomizedQuestions,
+          started: false, 
+          initialized: true, 
+          joinedUsers: [ {
+            id: FIREBASE_AUTH.currentUser?.uid,
+            username: FIREBASE_AUTH.currentUser?.displayName,
+            currentPoints: 0,
+          }],
+          roundInformation: [], 
+          winners: []
         }
 
         await gamesCollection.add(quizInitData)
-        setGameCode(gameCode)
-        setQuestions(randomizedQuestions)
+        setGameCode?.((gameCode ? gameCode : ''))
+        setGameQuestions?.(randomizedQuestions)
 
           
         console.log('Quiz init successfully!');
         console.log(t('quizInitSucc'))
-        navigation?.navigate('InitializedGameScreen')
-      } catch (error) {
-        console.error('Error init quiz:', error.message);
+        navigation?.navigate('InitializedGameScreen', { gameCode: gameCode})
+      } catch (err) {
+        console.error('Error init quiz:', err);
         console.log(t('quizInitError'))
       }
       finally{
         setLoading(false)
     }
 
-  };
+    };
 
+    const setTotalAmountOfQuestions = (number: number) =>{
+      if(number < 5 || number > numberOfQuestions){
+        return numberOfQuestions
+      }else{ 
+        return number
+      }
+    }
+
+   
 
     return (
       <SafeAreaView style={containerStyles.container}>
-        <ImageBackground source={IMAGES.WAVY_BACKGROUND} resizeMethod="scale" resizeMode="cover" style={imageStyles.backgroundImage}>
+        <ImageBackground source={IMAGES.WAVY_BACKGROUND} resizeMethod="scale"  style={imageStyles.backgroundImage}>
           <NativeBaseProvider>
           <View style={{alignItems:'center', marginTop: 15}}>
             <CustomTitle label={t('enterAmountOfQuestions')}/>
           </View> 
-          <CustomText label={ totalAmount.toString()+ ' ' + t('questions'+ ' ' + t('availiable'))}/>
+          <CustomText label={ numberOfQuestions.toString()+ ' ' + t('questions'+ ' ' + t('availiable'))}/>
           <NumericInput 
             value={numberOfQuestions}
             type='up-down'
-            maxValue={totalAmount}
-            onChange={(numberOfQuestions: number) => setAmountOfQuestions(numberOfQuestions)}
+            maxValue={numberOfQuestions}
+            onChange={(numberOfQuestions: number) => setTotalAmountOfQuestions(numberOfQuestions)}
             onLimitReached={(totalAmount) => console.log(totalAmount,t('maxValMsg'))}
             totalWidth={140} 
             totalHeight={50} 
@@ -236,7 +268,7 @@ const EnterAmountOfQuestions = ({
               (<ActivityIndicator size='large' color={COLORS.activityIndicatorColor}/>
             ) : (
               <>
-               <CustomLink label={t('back')} onPress={()=>{navigation?.navigate("EnterNameScreen")}} />
+               <CustomLink label={t('back')} onPress={()=>{navigation?.navigate("EnterCategoryScreen")}} />
                 <CustomButton label={t('startGame')} onPress={initGame} />
               </>
               )}
@@ -248,23 +280,55 @@ const EnterAmountOfQuestions = ({
           
 };
 
-const InitializedGameScreen = ({ navigation, quizName, gameCode, setGameStarted, gameStarted }: EnteredQuizData) => {
+const InitializedGameScreen = ({ navigation, quizName, gameCode, setGameStarted, gameStarted }:  EnteredQuizData) => {
+  const gamesCollection = FIRESTORE.collection('games'); 
   const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
-  const [remainingTime, setRemainingTime] = useState(60); // 60 seconds = 1 minute
+  const [remainingTime, setRemainingTime] = useState(60);
+
+
+  const setStart = async () => {
+    try {
+      setLoading(true);
+      const querySnapshot = await gamesCollection.where("gameCode", "==", gameCode).limit(1).get();
+      if (querySnapshot.empty) {
+        console.log("No matching documents.");
+        return;
+      }
+  
+      const gameDoc = querySnapshot.docs[0];
+      await gameDoc.ref.update({ started: true, initialized: false });
+  
+      // Fetch the updated game data  
+      console.log('Document successfully updated!');
+      console.log(t('gameStarted'));
+  
+      setGameStarted?.(true); // Assuming this function updates context or state higher up
+    } catch (error) {
+      console.error('Error updating document:', error);
+      console.log(t('gameStartedError'));
+    } finally {
+      setLoading(false);
+    }
+  };
+
 
   useEffect(() => {
     const timer = setInterval(() => {
       if (remainingTime > 0) {
         setRemainingTime((prevTime) => prevTime - 1);
       } else {
-        setGameStarted(true)
+        setStart()
+        setGameStarted?.(true)
         console.log(gameStarted)
 
         clearInterval(timer);
-        // Timer has reached 0, you can perform actions here
+        navigation.navigate('GameNavigatorScreens', {
+          screen: 'GameScreen',
+          params: { gameCode: gameCode },
+      });
+
         console.log('Timer reached 0');
-        navigation?.navigate('GameNavigatorScreens')
       }
     }, 1000);
 
@@ -273,41 +337,42 @@ const InitializedGameScreen = ({ navigation, quizName, gameCode, setGameStarted,
 
   return (
     <SafeAreaView style={containerStyles.container}>
-      <ImageBackground source={IMAGES.WAVY_BACKGROUND} resizeMethod="scale" resizeMode="cover" style={imageStyles.backgroundImage}>
+      <ImageBackground source={IMAGES.WAVY_BACKGROUND} resizeMethod="scale"  style={imageStyles.backgroundImage}>
         <NativeBaseProvider>
-        {gameCode.length > 0 ? (
-           <><View style={{ alignItems: 'center', marginTop: 20 }}>
-              <CustomTitle label={t('quizInitSucc')} />
-              <CustomText  boldFactor={true} label={quizName+ ' ' + t('startsIn') + ' ' + remainingTime} />
-              <Card style={{width: "80%"}}>
-                <Card.Title
-                  title={t('gameCode')}
-                  subtitle={t('joynGame')}
-                  left={(props) => <Avatar.Icon {...props} icon="gamepad" />}
-                />
-                <View style={{ alignItems: 'center', marginTop: 20, marginBottom: 20 }}>
-                  <CustomText label={gameCode} textColor="black"/>
-                </View>
-              </Card>
-             
-            </View><View style={containerStyles.bottom}>
+          {gameCode ? (
+            <>
+              <View style={{ alignItems: 'center', marginTop: 20 }}>
+                <CustomTitle label={t('quizInitSucc')} style={{marginBottom: 15}}/>
+                <CustomText boldFactor={true} label={quizName + ' ' + t('startsIn') + ' ' + remainingTime} style={{marginBottom: 15}}/>
+                <QRCode value={gameCode} size={200}  />
+                <Card style={{ width: "80%", marginTop: 15}}>
+                  <Card.Title
+                    title={t('gameCode')}
+                    subtitle={t('joynGame')}
+                    left={(props) => <Avatar.Icon {...props} icon="gamepad" />}
+                  />
+                  <View style={{ alignItems: 'center', marginTop: 20, marginBottom: 20 }}>
+                    <CustomText label={gameCode} textColor="black" />
+                  </View>
+                </Card>
+              </View>
+              <View style={containerStyles.bottom}>
                 {loading ? (
                   <ActivityIndicator size='large' color={COLORS.activityIndicatorColor} />
                 ) : (
                   <>
-                    <CustomButton label={t('cancel')} onPress={() => { navigation?.navigate('Home'); } } />
-                    <CustomButton label={t('continue')} onPress={() => { navigation?.navigate('EnterAmountOfQuestions'); } } />
+                    <CustomButton label={t('cancel')} onPress={() => { navigation?.navigate('Home'); }} />
+                    <CustomButton label={t('skipTime')} onPress={() => setRemainingTime(0)} />
                   </>
                 )}
-              </View></>
-          ): (
-            <><View style={{ alignItems: 'center', marginTop: 15 }}>
+              </View>
+            </>
+          ) : (
+            <View style={{ alignItems: 'center', marginTop: 15 }}>
               <CustomText label={t('quizCodeNotInit')} />
-              <CustomLink label={t('back')} onPress={()=>{navigation?.navigate("Home")}} />
-            </View></>
-          )
-        }
-         
+              <CustomLink label={t('back')} onPress={() => { navigation?.navigate("Home") }} />
+            </View>
+          )}
         </NativeBaseProvider>
       </ImageBackground>
     </SafeAreaView>

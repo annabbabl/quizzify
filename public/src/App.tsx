@@ -5,7 +5,6 @@ import { onAuthStateChanged } from "firebase/auth";
 import AuthNavigator from "./navigation/AuthNavigator";
 import HomeNavigator from "./navigation/HomeNavigator";
 import { useFonts } from "expo-font";
-import Toast from "react-native-toast-message";
 import { FIREBASE_AUTH } from "./firebase/firebaseConfig";
 
 const App = () => {
@@ -37,10 +36,9 @@ const App = () => {
 
   return (
     <View style={{flex: 1}} onLayout={onLayoutRootView}>
-      <Toast />
       <NavigationContainer>
       {loggedIn ? (
-        <HomeNavigator initiatingQuiz={false} setInitiatingQuiz={function (value: React.SetStateAction<boolean>): void {
+        <HomeNavigator initiatingQuiz={false}  setInitiatingQuiz={function (value: React.SetStateAction<boolean>): void {
             throw new Error("Function not implemented.");
           } } setLoggedIn={function (value: React.SetStateAction<boolean>): void {
             throw new Error("Function not implemented.");

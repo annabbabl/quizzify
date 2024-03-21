@@ -7,7 +7,7 @@ import RegistrationScreen from "../components/auth/registration/registration";
 
 const Stack = createNativeStackNavigator();
 
-const AuthNavigator = ({ loggedIn, setLoggedIn }) =>{
+const AuthNavigator = ( loggedIn: boolean, setLoggedIn: React.Dispatch<React.SetStateAction<boolean>>) =>{
   return (
     <Stack.Navigator>
       <Stack.Screen

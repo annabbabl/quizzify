@@ -40,7 +40,7 @@ const LoginScreen = ({ navigation }: AuthRouterProps) => {
   
   return (
       <KeyboardAvoidingView behavior='padding' style={containerStyles.container}>
-        <ImageBackground source={IMAGES.WAVY_BACKGROUND}  resizeMethod="scale" resizeMode="cover" style={imageStyles.backgroundImage}>
+        <ImageBackground source={IMAGES.WAVY_BACKGROUND}  resizeMethod="scale"  style={imageStyles.backgroundImage}>
           <NativeBaseProvider>
           <View style={{alignItems:'center'}}>
             <CustomTitle label={t('login')}/>
@@ -49,7 +49,7 @@ const LoginScreen = ({ navigation }: AuthRouterProps) => {
                 label={t('email')}
                 value={email}
                 right={<TextInput.Icon icon="email" />}
-                onChangeText={(email) => setEmail(email)}
+                onChangeText={(email: string) => setEmail(email)}
                 placeholder={t('email')}
                 style={{marginTop: 30, marginBottom: 20}}
             />

@@ -8,6 +8,8 @@ import sideBarItems from "../constants/barItems/sideBarItems";
 import { AuthRouterProps, SideBarRouterProps } from "./routers";
 import Home from "../components/home/home";
 import InitializeQuizNavigatorScreens from "./InitializeQuizNavigation";
+import GameNavigatorScreens from "./GameNavigator";
+
 
 const Drawer = createDrawerNavigator();
 
@@ -16,13 +18,7 @@ const HomeNavigator: React.FC<SideBarRouterProps & { navigation?: DrawerNavigati
                                       setInitiatingQuiz: React.Dispatch<React.SetStateAction<boolean>>, 
                                       setLoggedIn: React.Dispatch<React.SetStateAction<boolean>>; }>
                                       
-                                      = ({ navigation, setInitiatingQuiz, setLoggedIn, initiatingQuiz, setQuestions }: AuthRouterProps & SideBarRouterProps) => {
-
-  const navigateToScreen = (screenName: string) => {
-    navigation?.navigate(screenName, { editing: false, adding: false });
-  };
-  const [, setSettingChange] = useState(false); // Track if quiz is being initiated
-
+                                      = ({ navigation }: AuthRouterProps & SideBarRouterProps) => {
   return (
     <Drawer.Navigator drawerContent={(props) => <Sidebar {...props} />} >
       {sideBarItems.map((sideBarItem, index) => (
@@ -37,12 +33,9 @@ const HomeNavigator: React.FC<SideBarRouterProps & { navigation?: DrawerNavigati
         sideBarItem.screenName === 'profile' ? (
           <Drawer.Screen
             key={index}
-            name="Profile"
-          >
-            {(props) => (
-              <Profile {...props} setSettingChange={setSettingChange}/>
-            )}
-          </Drawer.Screen>
+            name="Profile" 
+            component={Profile}
+          />        
         ) : sideBarItem.screenName === 'questions' ? (
           // Use QuestionsScreenNavigator for 'questions' screen
           <Drawer.Screen
@@ -52,23 +45,25 @@ const HomeNavigator: React.FC<SideBarRouterProps & { navigation?: DrawerNavigati
             options={{ title: 'Questions' }}
           />
         ) : (
-          <Drawer.Screen
+           <Drawer.Screen
             key={index}
-            name={(sideBarItem  && sideBarItem.screenName ? sideBarItem.screenName : '')}
+            name={(sideBarItem && sideBarItem.screenName ? sideBarItem.screenName : '')}
             component={sideBarItem.component}
-            listeners={{
-              tabPress: (e) => {
-                e.preventDefault();
-                navigateToScreen((sideBarItem  && sideBarItem.screenName ? sideBarItem.screenName : ''));
-              },
+            options={{
+              title: sideBarItem.screenName === "questions" ? "Questions" : undefined
             }}
           />
         )
       ))}
       <Drawer.Screen 
         name="InitializeQuizNavigatorScreens"
-        component={InitializeQuizNavigatorScreens}
         options={{ headerShown: false }}
+        component={InitializeQuizNavigatorScreens}
+      />
+      <Drawer.Screen 
+        name="GameNavigatorScreens"
+        options={{ headerShown: false }}
+        component={GameNavigatorScreens}
       />
     </Drawer.Navigator>
   );

@@ -3,6 +3,7 @@ import Profile from "../../components/sideBarScreens/profile";
 import TemplateScreen from "../../components/sideBarScreens/template/templatesScreen";
 import { TabElement } from "../../types/localTypes/uiTypes";
 import QuestionsScreen from "../../components/sideBarScreens/questions/questionsScreen";
+import GamesStatistics from "components/sideBarScreens/gameStatistics";
 
 const sideBarItems: Array<TabElement>= [
     {
@@ -20,11 +21,11 @@ const sideBarItems: Array<TabElement>= [
         component: Profile
     },
     {
-      name: 'lookAtGames',
+      name: 'gamesStatistic',
       iconType: 'Material',
       iconName: 'gamepad',
       screenName: 'GamesStatistic',
-      component: Profile
+      component: GamesStatistics
     },
     {
         name: 'editTemplate',

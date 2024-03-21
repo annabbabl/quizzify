@@ -110,21 +110,20 @@ const imageStyles =
         height: 200,
       },
       backgroundImageTemplate: {
-        resizeMode:"center",
-        width: 150,
-        height: 100,
+        width: 80,
+        height: 80,
       },
       imageGallery: {
         flex: 1,
         resizeMode:"contain",
-        width: 150,
-        height: 150,
+        width: 100,
+        height: 100,
         borderRadius: 6
       },
       backgroundImage: {
         flex: 1,
         width: '100%',       
-        height: '100%',       
+        height: '100%',
       },
 }) 
 

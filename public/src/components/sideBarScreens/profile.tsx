@@ -13,17 +13,17 @@ import { UserEdit } from "../../types/localTypes/editTypes";
 import { Avatar, Card, TextInput } from "react-native-paper";
 import { FIREBASE_AUTH, FIRESTORE } from "../../firebase/firebaseConfig";
 
-const LeftContent = props => <Avatar.Icon {...props} icon="account" />
+const LeftContent = (props: any) => <Avatar.Icon {...props} icon="account" />
 
-const Profile = ({ navigation, setSettingChange }) => {
+const Profile = ({ }) => {
     const { t } = useTranslation();
   
     const currentUser = FIREBASE_AUTH.currentUser;
     const usersCollection = FIRESTORE.collection('users');
   
     const [settingChangeLocal, setSettingChangeLocal] = useState(false); // Local state variable
-    const [username, setUsername] = useState(currentUser.displayName || "");
-    const [email, setEmail] = useState(currentUser.email || "");
+    const [username, setUsername] = useState(currentUser?.displayName || "");
+    const [email, setEmail] = useState(currentUser?.email || "");
     const [password, setPassword] = useState("");
     const [loading, setLoading] = useState(false);
   
@@ -44,7 +44,7 @@ const Profile = ({ navigation, setSettingChange }) => {
                     console.log('Document successfully updated!');
                     console.log(t('userSettingsupdatedSuccessfully'))
                     setSettingChangeLocal(!settingChangeLocal);
-                    setSettingChange(!setSettingChange);
+                    setSettingChangeLocal?.(!settingChangeLocal);
                 })
                 .catch((error) => {
                     console.error('Error updating document:', error);
@@ -88,7 +88,7 @@ const Profile = ({ navigation, setSettingChange }) => {
                     console.log(t('userPasswordUpdateError'))
                 });
             setSettingChangeLocal(!settingChangeLocal);
-        } catch (error) {
+        } catch (error: any) {
           console.log(t('userPasswordUpdateError'))
             console.error('Error updating password:', error.message);
         }finally{
@@ -106,7 +106,7 @@ const Profile = ({ navigation, setSettingChange }) => {
             loggedIn: false
           }
       
-          usersCollection.doc(currentUser.uid).update(loggedOutUserData)
+          usersCollection.doc(currentUser?.uid).update(loggedOutUserData)
             .then(() => {
                 console.log('Document successfully updated!');
                 console.log(response)
@@ -132,15 +132,15 @@ const Profile = ({ navigation, setSettingChange }) => {
             <>
              <Text fontSize="6xl" bold>{t('profile')}</Text>
               <Card contentStyle={{ backgroundColor: 'white' }}>
-                <Card.Title title={currentUser.displayName} left={LeftContent} />
+                <Card.Title title={currentUser?.displayName} left={LeftContent} />
                 <Card.Content>
                 <View style={containerStyles.horizontalContainer1}>
                       <Text fontSize="2xl" bold>{t('name') + ": "}</Text>
-                      <Text fontSize="2xl" bold>{currentUser.displayName}</Text>
+                      <Text fontSize="2xl" bold>{currentUser?.displayName}</Text>
                   </View>
                   <View style={containerStyles.horizontalContainer1}>
                       <Text fontSize="2xl" bold>{t('email') + ": "}</Text>
-                      <Text fontSize="2xl" bold>{currentUser.email}</Text>
+                      <Text fontSize="2xl" bold>{currentUser?.email}</Text>
                   </View>
                 </Card.Content>
               </Card>
@@ -156,14 +156,14 @@ const Profile = ({ navigation, setSettingChange }) => {
                       value={username}
                       right={<TextInput.Icon icon="account" />}
                       onChangeText={(username) => setUsername(username)}
-                      placeholder={currentUser.displayName}
+                      placeholder={(currentUser?.displayName ? currentUser.displayName : '')}
                     />
                     <TextInput
                       value={email}
                       label={(t('email'))}
                       right={<TextInput.Icon icon="email" />}
                       onChangeText={(email) => setEmail(email)}
-                      placeholder={currentUser.email}
+                      placeholder={(currentUser?.email ? currentUser.email : '')}
                     />
                     <TextInput
                       label={(t('pw'))}

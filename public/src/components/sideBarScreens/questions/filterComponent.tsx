@@ -4,11 +4,11 @@ import '../../../constants/i18next'
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { CustomButton, CustomButtonWithIcon, CustomText } from "../../common/shared/components";
-import { CheckIcon, Select, View } from "native-base";
+import { CheckIcon, Select } from "native-base";
 import { RadioButton } from 'react-native-paper';
 import { Filter } from '../../../types/localTypes/uiTypes';
 import { COLORS, ICONSIZE } from '../../../constants/theme';
-import { Modal } from 'react-native';
+import { Modal, View } from 'react-native';
 import { QuestionScreenRouterProps } from '../../../navigation/routers';
 
 
@@ -24,7 +24,7 @@ const SetFilterComponent = ({ categories, filter, setModalVisibilty,  setFilter 
         typeOfQuestion: typeOfQuestion
     }
     filter = appliedFilter
-    setFilter(filter)
+    setFilter?.(filter)
 
     return appliedFilter; 
   }
@@ -32,7 +32,7 @@ const SetFilterComponent = ({ categories, filter, setModalVisibilty,  setFilter 
     filter = {}
     setChoosenCategory('')
     setTypeOfQuestion('')
-    setFilter(filter)
+    setFilter?.(filter)
     console.log(filter)
   }
 
@@ -42,7 +42,7 @@ const SetFilterComponent = ({ categories, filter, setModalVisibilty,  setFilter 
           animationType="slide"
           transparent={true}
           visible={true}
-          onRequestClose={() => setModalVisibilty(false)}
+          onRequestClose={() => setModalVisibilty?.(false)}
         >
             <View style={containerStyles.modalContainer}>
                 <View style={containerStyles.modalContent}>
@@ -56,7 +56,7 @@ const SetFilterComponent = ({ categories, filter, setModalVisibilty,  setFilter 
                         <Select 
                             selectedValue={t('selectCategory')} 
                             minWidth="200" 
-                            accessibilityLabel={t('selectCategory')} 
+                            aria-label={t('selectCategory')} 
                             placeholder={t('selectCategory')} 
                             _selectedItem={{
                                 bg: "teal.600",
@@ -94,7 +94,7 @@ const SetFilterComponent = ({ categories, filter, setModalVisibilty,  setFilter 
                             />
                         </View>
                     </View>
-                    <CustomButton label={t('close')} onPress={() => setModalVisibilty(false)} />
+                    <CustomButton label={t('close')} onPress={() => setModalVisibilty?.(false)} />
                 </View>
             </View>
         </Modal>

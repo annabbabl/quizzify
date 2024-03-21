@@ -15,7 +15,7 @@ import ImageFragment from './fragments/imageFragment';
 import { updateStyle } from '../../../appFunctions/utils';
 import { Container } from '../../../types/localTypes/templateTypes';
 
-const UpperTabBar = ({ navigation, 
+const UpperTabBar = ({ 
     barItem, 
     availaibleFunctions, 
     colorPickerViewVisibilty, 
@@ -43,19 +43,20 @@ const UpperTabBar = ({ navigation,
   
   
   const addChoosenStyle = (property: string, styleValue: string | number | {}) => {
-    
     updateStyle(property, styleValue, (touchedContainer ? touchedContainer: {} as Container))
     
     setContainerStyle?.((touchedContainer && touchedContainer.style ? touchedContainer.style : {}));
     setTouchedContainer?.((touchedContainer ? touchedContainer : {} as Container));
+    console.log((touchedContainer && touchedContainer.style ? touchedContainer.style : {}),property, styleValue, 81982982, touchedContainer?.name)
   };
-  const getDefaultValue = (availaibleFunction: FunctionType) => {
+  const getDefaultValue = (availaibleFunction: FunctionType | undefined) => {
     let defaultValue : number | undefined | string | {} | Offset = ""
 
-    let choosenCss: ChoosenCss | undefined = ((touchedContainer ? touchedContainer : {} as Container)).stylesArray.find((style: ChoosenCss) => style.property === availaibleFunction.name)
+    let choosenCss: ChoosenCss | undefined = 
+    ((touchedContainer ? touchedContainer : {} as Container)).stylesArray.find((style: ChoosenCss) => style.property === availaibleFunction?.name)
     
     if(typeof choosenCss == 'undefined'){
-      switch (availaibleFunction.type) {
+      switch (availaibleFunction?.type) {
         case 'string':
           defaultValue = ""
           break;
@@ -65,7 +66,7 @@ const UpperTabBar = ({ navigation,
           break;
 
         default:
-          console.log('Unknown label:', (availaibleFunction.type));
+          console.log('Unknown label:', (availaibleFunction?.type));
           return;
       }
     }
@@ -80,6 +81,8 @@ const UpperTabBar = ({ navigation,
   const getTogglesStyle = (property: string, toggle: boolean) => {
     
     const styleValue = toggle ? 10 : 0;
+    console.log(styleValue, toggle, 1289839)
+    setToggleStyleValue(toggle)
   
     updateStyle(property, styleValue, ((touchedContainer  ? touchedContainer : {} as Container)))
     
@@ -111,7 +114,6 @@ const UpperTabBar = ({ navigation,
               setBackgroundImage={setBackgroundImage}
               backgroundImage={backgroundImage}
            />
-
           ): textInputFragmentvisibility ? (
             <TextInputFragment
               availaibleFunction={objectProperty}
@@ -141,9 +143,9 @@ const UpperTabBar = ({ navigation,
                       </View>
                       <View style={{width:'40%', flex: 1}}>
                           <Select
-                              selectedValue={getDefaultValue((availaibleFunction ? availaibleFunction : {} as FunctionType)).toString()}
+                              selectedValue={getDefaultValue(availaibleFunction)?.toString() }
                               width={120}
-                              accessibilityLabel={t('select')}
+                              aria-label={t('select')}
                               placeholder={t('select')}
                               _selectedItem={{
                                   bg: "teal.600",
@@ -170,15 +172,14 @@ const UpperTabBar = ({ navigation,
                           <View style={{width:'50%'}}>
                               <Slider
                                   aria-label={availaibleFunction.screenName ? availaibleFunction.screenName + ': ' : availaibleFunction.name + ': '}
-                                  defaultValue={Number(getDefaultValue(availaibleFunction))}
                                   getAriaValueText={(value: number) => String(value)}
                                   step={1}
                                   aria-labelledby={availaibleFunction.screenName ? t(availaibleFunction.screenName) + ': ' : t(availaibleFunction.name) + ': '}
                                   min={0}
                                   max={80}
                                   valueLabelDisplay="auto"
-                                  onChange={(event: Event, value: number) => 
-                                      addChoosenStyle(availaibleFunction.name, Math.floor(value))
+                                  onChange={(_event: Event, value: number | number[]) => 
+                                    addChoosenStyle(availaibleFunction.name, Math.floor(value as number))
                                   }
                                   color="secondary"
                                   style={{ marginBottom: 10, marginLeft: 11, maxWidth: '80%' }}
@@ -200,7 +201,7 @@ const UpperTabBar = ({ navigation,
                               key={index}
                               switchValue={toggleStyleValue}
                               onValueChange={(toggle) => {
-                                  getTogglesStyle(availaibleFunction.name, toggle);
+                                getTogglesStyle(availaibleFunction.name, toggle);
                               }}
                               style={{ marginBottom: 2 }}
                           />

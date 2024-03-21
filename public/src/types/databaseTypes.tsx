@@ -1,6 +1,6 @@
 import firebase from 'firebase/compat/app'
-import { TemplateBackground, Container } from './localTypes/templateTypes';
-import { QuestionEdit } from './localTypes/editTypes';
+import { Container } from './localTypes/templateTypes';
+import { QuestionEdit, joinedUser } from './localTypes/editTypes';
 
 type Timestamp = firebase.firestore.Timestamp;
 
@@ -68,7 +68,21 @@ type QuizInitData = {
     numberOfQuestions: number, 
     createdBy: string, 
     createdAt: Timestamp
-    questions: Array<QuestionEdit>
+    questions: Array<QuestionEdit>, 
+    started:boolean, 
+    initialized: boolean
+    roundInformation?: Array<RoundInformationDatabase>,
+    winners? : Array<joinedUser>,
+    joinedUsers? : Array<joinedUser>
+}
+
+
+
+type RoundInformationDatabase = {
+    userId: string | undefined, 
+    answerStatus: boolean, 
+    question : string | undefined, 
+    currentRound: number
 }
 
 type QuizInit = QuizInitData & {
@@ -76,7 +90,7 @@ type QuizInit = QuizInitData & {
 }
 
 
-export { 
+export type { 
     UserAdd, 
     UserDatabase,
     QuestionAdd,
@@ -88,5 +102,6 @@ export {
     AddImages, 
     Images, 
     QuizInit,
-    QuizInitData
+    QuizInitData,
+    RoundInformationDatabase
 }

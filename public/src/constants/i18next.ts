@@ -11,7 +11,6 @@ i18next
     .init({
         compatibilityJSON: 'v3',
         debug: true, 
-        lng: deviceLanguage,
         fallbackLng: 'de', 
         resources: {
             en: {
@@ -55,6 +54,8 @@ i18next
                     registeredSuccessfull: 'Successfully Registered', 
                     noAccount: 'You do not have an Account yet? Register here!', 
                     backToLogin: 'Back To Login',
+                    username: "Username",
+
                     
                     //home screen
                     startGame: 'Start Game',
@@ -65,7 +66,7 @@ i18next
                     lookAtGames: 'Games Statistics', 
                     profile: 'Profile', 
                     editTemplate: 'Edit Template', 
-                    questions: 'Fragen', 
+                    questions: 'Questions', 
                     backToHome: 'Back To Homepage',
                     home: 'Home Screen', 
 
@@ -99,6 +100,10 @@ i18next
                     noQuestionsAvailable: 'No Questions Available',
                     category: 'Category', 
                     typeOfQuestion: 'Question Type', 
+                    cantPlay: "You do not have any questions yet", 
+                    otherAnswers: "Further Answers",
+                    QuestionsScreen: " Questions",
+
 
  
 
@@ -189,10 +194,13 @@ i18next
                     transform: 'Transform',
                     decorationLine: 'Decoration Line', 
                     textDecorationStyle: 'Decoration Line Style',
+                    textDecorationColor: 'Decoration Line Color',
                     borderStyle: 'Border Style', 
                     pleaseSelectAContainer: 'Please select a Container',
                     templateUpdatedSuccessfully: 'Template Updated Successfully',
                     buttonAlign:'Button Align',
+                    textAlign: "Text Align",
+                    align: "Align",
 
                     //imageFragment
                     noImagesAvailable: 'No images available', 
@@ -211,8 +219,21 @@ i18next
                     quizInitError: 'Error while initializing the Quiz', 
                     startsIn: 'Start in', 
                     gameCode: 'Game Code', 
-                    quizCodeNotInit: 'Quiz Not Initialized'
+                    quizCodeNotInit: 'Quiz Not Initialized', 
 
+                    //EnterGameScreen
+                    enterGameCode: "Enter the Game Code", 
+                    waitForNextGame: "Wait for next game",
+                    gamesStatistic : "Games Statistic",
+
+                    //Games Statistics
+                    noGamesStitisticsAvaliable: "No Games Statistics available",
+                    theWinneris: "The winner is ",
+                    with: "with ", 
+                    skipTime: "Skip time",
+                    congratilation: "Congratulations",
+                    remainingTime: "Remaining Time: ",
+                    sek: "sek."
                 }
             },
             de: {
@@ -260,6 +281,7 @@ i18next
                     backToLogin: 'Zurück zum Login',
                     welcome: 'Willkommen!',
                     welcometoQ: 'Willkommen zu Quizzify!',
+                    otherAnswers: "Weitere Antwortmöglichkeiten",
 
                     //side bar
                     lookAtGames: 'Spiele Statistik',
@@ -300,6 +322,9 @@ i18next
                     amountOfQuestions: 'Anzahl der Fragen',
                     category: 'Kategorie', 
                     typeOfQuestion: 'Fragen Typ', 
+                    username: "Benutzername",
+                    cantPlay: "Du hast noch keine Fragen",
+                    questions: "Fragen", 
 
 
                     // Add Question
@@ -386,10 +411,15 @@ i18next
                     transform: 'Rotieren',
                     decorationLine: 'Text Linie', 
                     textDecorationStyle: 'Linienstil', 
+                    textDecorationColor: 'Decoration Line Color',
                     borderStyle: 'Rand Stil', 
                     pleaseSelectAContainer: 'Bitte Klick auf ein Element',
                     templateUpdatedSuccessfully: 'Template Erfolgreich Geupdated',
                     buttonAlign:'Ausrichtung Knöpfe',
+                    textAlign: "Textausrichtung",
+                    align: "Ausrichting",
+                    QuestionsScreen: "Fragen",
+
 
 
                     //image fragment 
@@ -409,8 +439,21 @@ i18next
                     quizInitError: 'Fehler beim initiieren des Quizzes',
                     startsIn: 'Startet In', 
                     gameCode: 'Spielecode', 
-                    quizCodeNotInit: 'Quiz Wurde nicht initialisiert'
+                    quizCodeNotInit: 'Quiz Wurde nicht initialisiert',
 
+                    //EnterGameScreen
+                    enterGameCode: "Gib den Spielecode ein",
+                    waitForNextGame: "Warte auf das nächste Spiel",
+                    gamesStatistic : "Spiele Statistic",
+
+                    //Games Statistics
+                    noGamesStitisticsAvaliable: "Keine Spielestatistik verfügbar",
+                    theWinneris: "Der Gewinner ist ",
+                    with: "mit ",
+                    skipTime: "Zeit überspringen",
+                    congratilation: "Herzlichen Glückwunsch",
+                    remainingTime: "Du hast noch: ",
+                    sek: "sek."
                 }
             }
         },

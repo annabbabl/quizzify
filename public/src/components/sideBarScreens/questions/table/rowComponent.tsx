@@ -6,20 +6,20 @@ import { COLORS, ICONSIZE } from "../../../../constants/theme";
 import { useTranslation } from "react-i18next";
 import { ActivityIndicator, View } from "react-native";
 import { useState } from "react";
-import { QuestionEdit } from "../../../../types/localTypes/editTypes";
+import { PossibleAnswerEdit, QuestionEdit } from "../../../../types/localTypes/editTypes";
 import  EditingCellComponent  from "./cellComponent";
 import { CheckIcon, Select } from "native-base";
 import React from "react";
 import { FIRESTORE } from "../../../../firebase/firebaseConfig";
 
 interface RowComponentProps {
-    id?: string;
-    category?: string;
-    categories?: string[];
-    question: string;
-    rightAnswer: string;
-    trueFalseQuestion: string;
-    possibleAnswers: string[];
+  id?: string;
+  category?: string;
+  categories?: string[];
+  question: string;
+  rightAnswer: string;
+  trueFalseQuestion: string;
+  possibleAnswers: any;
 }
 
 const RowComponent: React.FC<RowComponentProps> = ({
@@ -40,7 +40,7 @@ const RowComponent: React.FC<RowComponentProps> = ({
   
     const addChangedData = (label: string, data: string | boolean) => {
         const dataValue = typeof data == 'boolean' ? data.toString(): data
-
+        console.log(rightAnswer, question, 7278278)
       const index = changedData.findIndex(
         (item) => Object.keys(item)[0] === label
       );
@@ -93,7 +93,7 @@ const RowComponent: React.FC<RowComponentProps> = ({
         await batch.commit();
         console.log(t('updatedSuccessfully'))
 
-      } catch (error) {
+      } catch (error: any) {
         console.log(t('errorUpdate'))
         console.error('Error updating password:', error.message);
       }
@@ -109,14 +109,13 @@ const RowComponent: React.FC<RowComponentProps> = ({
 
       await FIRESTORE.collection('questions').doc(id).delete();
       console.log('Question deleted successfully!');
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error deleting question:', error.message);
     }finally{
       setLoading(false)
     }
   };
 
-  
   return (
     <SafeAreaView key={id} style={{ backgroundColor: COLORS.backgroundColor }}>
       {!editting ? (
@@ -127,11 +126,11 @@ const RowComponent: React.FC<RowComponentProps> = ({
               <CustomText label={question}/>
               <List.Section>
                 <List.Item title={rightAnswer} left={() => <List.Icon icon="check" color={COLORS.greenPrimaryColor} />} />
-                {possibleAnswers.length > 0 ? (
-                  possibleAnswers.map((possibleAnswer: string, index: number) => (
+                {possibleAnswers && possibleAnswers.length > 0 ? (
+                  possibleAnswers.map((possibleAnswer: any, index: number) => (
                     <List.Item
                       key={index}
-                      title={possibleAnswer}
+                      title={possibleAnswer ? possibleAnswer.toString(): ""}
                       left={() => <List.Icon color={COLORS.redPrimaryColor} icon="close" />}
                     />
                   ))
@@ -144,7 +143,7 @@ const RowComponent: React.FC<RowComponentProps> = ({
                   <View style={containerStyles.horizontalCentral2}>
                     <CustomButtonWithIcon
                           onPress={() => setEdditing(true)}
-                          iconName={'edit'}
+                          iconName={'circle-edit-outline'}
                           iconSize={ICONSIZE.small}
                           iconColor={COLORS.secondaryColor}
                       />
@@ -166,7 +165,7 @@ const RowComponent: React.FC<RowComponentProps> = ({
           {categories ? (
              <Select 
                 selectedValue={t('selectCategory')} 
-                minWidth="200" accessibilityLabel={t('selectCategory')}         
+                minWidth="200" aria-label={t('selectCategory')}         
                 placeholder=  {t('selectCategory')} 
                 defaultValue={category}
               _selectedItem={{
@@ -199,7 +198,7 @@ const RowComponent: React.FC<RowComponentProps> = ({
               label={'trueFalseQuestion'}
               onValueChange={(value: boolean) => addChangedData('trueFalseQuestion', value)}
             />
-            {possibleAnswers.length > 0 ? (
+            { possibleAnswers && possibleAnswers.length > 0 ? (
               possibleAnswers.map((possibleAnswer: string, index: number) => (
                 <EditingCellComponent
                   key={index}
@@ -222,7 +221,7 @@ const RowComponent: React.FC<RowComponentProps> = ({
                 editQuestions(id ? id: ''); // Assuming editQuestions function takes id and changedData as arguments
                 setChangedData([]);
               }}
-              iconName={'save'}
+              iconName={'circle-edit-outline'}
               iconType={'Material'}
               iconSize={ICONSIZE.small}
               iconColor={COLORS.secondaryColor}

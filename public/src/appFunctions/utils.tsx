@@ -27,22 +27,6 @@ const convertStyleSheetToStyles = (styleSheet: Record<string, any>): ChoosenCss[
   return styles;
 };
 
-const convertStyleSheetToForStyles = (styleSheet: Record<string, any>): ChoosenCss[] => {
-  const styles: ChoosenCss[] = [];
-
-  for (const property in styleSheet) {
-    if (styleSheet.hasOwnProperty(property)) {
-      const css: ChoosenCss = styleSheet[property];
-      const convertedProperty: ChoosenCss = {
-        property: css.property, 
-        value: css.value
-      }
-      styles.push(convertedProperty);
-    }
-  }
-  return styles;
-};
-
 
 const updateContainers = (newContainer: Container, containersArray: Array<Container>) => {
   const updatedContainers = containersArray.map(container => {
@@ -91,7 +75,7 @@ const updateStyle = (property: string, styleValue: string | number | {}, touched
 }
 
 const generateGameCode = () => {
-  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789qwertzuiopasdfghjklyxcvbnm';
   let code = '';
   for (let i = 0; i < 5; i++) {
     const randomIndex = Math.floor(Math.random() * characters.length);
@@ -101,8 +85,8 @@ const generateGameCode = () => {
 };
 
 const getRandomQuestions = (arr: Array<QuestionEdit>, numElements: number) =>{
-  const randomIndices = [];
-  const selectedElements = [];
+  const randomIndices: number[] = [];
+  const selectedElements: QuestionEdit[] = [];
 
   while (randomIndices.length < numElements) {
     const randomIndex = Math.floor(Math.random() * arr.length);
@@ -119,11 +103,13 @@ const getRandomQuestions = (arr: Array<QuestionEdit>, numElements: number) =>{
   return selectedElements;
 }
 
-const capitalizeFirstLetter = (word: string) =>  {
-  if (word.length === 0) {
-    return word; // Return the original word if it's an empty string
+const capitalizeFirstLetter = (word: string | undefined | boolean) =>  {
+  if (typeof word !== "undefined") {
+    console.log(word?.toString().charAt(0).toUpperCase() + word?.toString().slice(1), 718718)
+    return word?.toString().charAt(0).toUpperCase() + word?.toString().slice(1)
+  }else{
+    return "";
   }
-  return word.charAt(0).toUpperCase() + word.slice(1);
 }
 
 const capitalizeKeys = (object: any) => {
@@ -155,7 +141,6 @@ const capitalizeKeys = (object: any) => {
 export {
   convertStylesToStyleSheet, 
   convertStyleSheetToStyles, 
-  convertStyleSheetToForStyles, 
   removeDuplicateObjects, 
   updateStyle, 
   generateGameCode, 

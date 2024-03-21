@@ -1,16 +1,13 @@
-import { NavigationProp } from "@react-navigation/native";
 import { QuestionEdit } from "../types/localTypes/editTypes";
-import { QuestionsScreenNavigatorProps } from "./QuestionScreenNavigator";
 import { ChoosenCss, Filter, FunctionType, TabElement } from "../types/localTypes/uiTypes";
 import { Container } from "../types/localTypes/templateTypes"
-import { RouteProp } from '@react-navigation/native';
 import { Images } from "../types/databaseTypes";
 
 interface RootLayout {
     questions? : Array<QuestionEdit>; 
     categories? : string[]; 
     quizData?: any; 
-    navigation?: NavigationProp<any, any>;
+    navigation?: any;
 }
 interface AuthRouterProps extends RootLayout{
     loggedIn?: boolean;
@@ -39,6 +36,7 @@ interface QuestionScreenRouterProps extends RootLayout {
     modalVisibility? : boolean
     setModalVisibilty?: React.Dispatch<React.SetStateAction<boolean>>;
     setFilter?: React.Dispatch<React.SetStateAction<Filter>>;
+    setAdding?: React.Dispatch<React.SetStateAction<boolean>>;
     setIsFetching?:  React.Dispatch<React.SetStateAction<boolean>>,
 }
 interface TemplateScreenProps  extends RootLayout {
@@ -56,7 +54,7 @@ interface TemplateScreenProps  extends RootLayout {
     imageFragmentVisibility?: boolean, 
     colorPickerViewVisibilty? : boolean, 
     templateCollection?: any; 
-    images?: Array<Images>, 
+    images?: Array<string>, 
     direction?: 'row' | 'column',
     templateID?: string, 
     backgroundImage?: string, 
@@ -67,7 +65,7 @@ interface TemplateScreenProps  extends RootLayout {
     setChangeInStyleMade?: React.Dispatch<React.SetStateAction<boolean>>;
     setTouchedContainer?: React.Dispatch<React.SetStateAction<Container>>; 
     setContainerStyle?:  React.Dispatch<React.SetStateAction<any>>,
-    setImages?:  React.Dispatch<React.SetStateAction<Array<Images>>>,
+    setImages?:  React.Dispatch<React.SetStateAction<Array<string>>>,
     setBackgroundImage?:  React.Dispatch<React.SetStateAction<string>>,
     setDirection?:  React.Dispatch<React.SetStateAction<string>>,
 }
@@ -88,26 +86,36 @@ interface EnteredQuizData extends RootLayout {
     setInitiatingQuiz?:React.Dispatch<React.SetStateAction<boolean>>;
     setAmountOfQuestions?:React.Dispatch<React.SetStateAction<number>>;
     setQuestions?:React.Dispatch<React.SetStateAction<Array<QuestionEdit>>>;
+    setGameQuestions?:React.Dispatch<React.SetStateAction<Array<QuestionEdit>>>;
     setGameCode?:React.Dispatch<React.SetStateAction<string>>;
     setGameStarted?:React.Dispatch<React.SetStateAction<boolean>>;
     initiatingQuiz?:boolean; 
     redirectToCategories?: boolean; 
     gameStarted?:boolean; 
     gameQuestions?: Array<QuestionEdit>
+    initQuiz?: boolean
 
 
     setTextInputFragmentvisibility?: React.Dispatch<React.SetStateAction<boolean>>;
     setColorPickerViewVisibilty?: React.Dispatch<React.SetStateAction<boolean>>;
 }
-interface GameNavigatorProps{
+interface GameNavigatorProps extends RootLayout{
     quizName? : string,
     gameCode?: string, 
+    gameId?: string, 
+    gameData?: any, 
     gameQuestions?: Array<QuestionEdit>,
     gameStarted?: boolean
     setGameStarted?:React.Dispatch<React.SetStateAction<boolean>>;
+    setGame?:React.Dispatch<React.SetStateAction<any>>;
+    setGameCode?:React.Dispatch<React.SetStateAction<string>>;
+    waitingScreen?:boolean, 
+    setWaitingScreen?:React.Dispatch<React.SetStateAction<boolean>>;
+    setEndScreen?:React.Dispatch<React.SetStateAction<boolean>>;
+    setGameId?:React.Dispatch<React.SetStateAction<string>>;
 }
 
-export { AuthRouterProps, 
+export type { AuthRouterProps, 
         QuestionScreenRouterProps,
         SideBarRouterProps,
         TemplateScreenProps,

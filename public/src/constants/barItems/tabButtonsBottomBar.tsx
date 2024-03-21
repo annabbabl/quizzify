@@ -18,9 +18,8 @@ const functions: Record<any, Array<FunctionType>> = {
         {name: 'shadowRadius',screenName: 'radius', icon: 'radius', type: 'number',iconType:'MaterialCommunityIcons'} ,
     ],
     text: [
-        {name: 'textDecoration', icon: 'format-text', type: 'string',iconType:'MaterialCommunityIcons', assignedValues: cssStyles.textDecoration} ,
+        {name: 'textDecorationColor', icon: 'invert-colors', type: 'color',iconType:'MaterialCommunityIcons', assignedValues: cssStyles.textDecoration} ,
         {name: 'textDecorationLine', screenName:'decorationLine', icon: 'format-underline', type: 'string',iconType:'MaterialCommunityIcons' , assignedValues: cssStyles.textDecoration} ,
-        {name: 'textDecorationStyle', screenName:'textDecorationStyle',icon: 'format-underline-wavy', type: 'string',iconType:'MaterialCommunityIcons',  assignedValues: cssStyles.textDecorationLine} ,
         {name: 'fontFamily', icon: '', type: 'string',iconType:'MaterialCommunityIcons', assignedValues: cssStyles.fontFamily} ,
         {name: 'fontSize',screenName: 'size', icon: 'format-size', type: 'number',iconType:'MaterialCommunityIcons'} ,
         {name: 'color', icon: 'invert-colors', type: 'color',iconType:'MaterialCommunityIcons'} ,
@@ -29,13 +28,14 @@ const functions: Record<any, Array<FunctionType>> = {
         {name: 'textShadowRadius',screenName: 'opacity', icon: 'circle-opacity', type: 'number',iconType:'MaterialCommunityIcons'} ,
         {name: 'textShadowRadius',screenName: 'radius', icon: 'radius', type: 'number',iconType:'MaterialCommunityIcons'} ,
         {name: 'textTransform',screenName: 'transform', icon: 'format-letter-case', type: 'string',iconType:'MaterialCommunityIcons', assignedValues: cssStyles.textTransform} ,
+        {name: 'textAlign',screenName: 'align', icon: 'format-letter-case', type: 'string',iconType:'MaterialCommunityIcons', assignedValues: cssStyles.textAlign} ,
     ], 
     border:[ 
         {name: 'borderWidth', screenName: 'border', icon: 'border-all', type: 'boolean',iconType:'MaterialCommunityIcons'} ,
         {name: 'borderStyle',screenName: 'borderStyle', icon: 'border-outside', type: 'string',iconType:'MaterialCommunityIcons' , assignedValues: cssStyles.borderStyle} ,
         {name: 'borderRadius',screenName: 'radius', icon: '', type: 'number',iconType:'MaterialCommunityIcons'} ,
         {name: 'borderColor',screenName: 'color', icon: 'invert-colors', type: 'color',iconType:'MaterialCommunityIcons'} ,
-        {name: 'borderWitdth',screenName: 'width', icon: 'panorama-wide-angle-outline', type: 'number',iconType:'MaterialCommunityIcons'} ,
+        {name: 'borderWidth',screenName: 'width', icon: 'panorama-wide-angle-outline', type: 'number',iconType:'MaterialCommunityIcons'} ,
     ],
     image:[ 
         {name: 'addImage', icon: 'plus-circle', type: 'function',iconType:'MaterialCommunityIcons'} ,
@@ -76,12 +76,12 @@ const bottomBarItems: Array<TabElement> = [
         iconName:'image',
         functionsAvailiable: functions.image
     },
-    {
-        name: 'background',
-        iconType:'MaterialCommunityIcons',
-        iconName:'arrange-send-backward',
-        functionsAvailiable : functions.background
-    },
+    // {
+    //     name: 'background',
+    //     iconType:'MaterialCommunityIcons',
+    //     iconName:'arrange-send-backward',
+    //     functionsAvailiable : functions.background
+    // },
 ];
 
 

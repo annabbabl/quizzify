@@ -32,4 +32,4 @@ type Offset = {
     y:number
 }
 
-export {Filter, FunctionType, TabElement, ChoosenCss, Offset}
+export type {Filter, FunctionType, TabElement, ChoosenCss, Offset}

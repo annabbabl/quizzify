@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { TemplateFragmentProps } from '../../../../navigation/routers';
-import { View, Image, ActivityIndicator, ScrollView, TouchableOpacity } from 'react-native';
+import { View, Image, ActivityIndicator, ScrollView, Pressable } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import * as ImagePicker from 'expo-image-picker';
 import { containerStyles, imageStyles } from '../../../../styles/components.style';
@@ -8,7 +8,6 @@ import { CustomButtonWithIcon, CustomText } from '../../../common/shared/compone
 import { COLORS, ICONSIZE } from '../../../../constants/theme';
 import { deleteObject, getDownloadURL, ref, uploadBytesResumable } from 'firebase/storage';
 import { Images } from '../../../../types/databaseTypes';
-import { ImagesEdit } from '../../../../types/localTypes/editTypes';
 import { FIRESTORE, FIREBASE_AUTH, FIREBASE_STORAGE } from '../../../../firebase/firebaseConfig';
 
 const ImageFragment = ({
@@ -20,44 +19,30 @@ const ImageFragment = ({
   backgroundImage
 }: TemplateFragmentProps) => {
   const { t } = useTranslation();
-
-  const imageCollection = FIRESTORE.collection('users')
-    .doc(FIREBASE_AUTH?.currentUser?.uid)
-    .collection('templates')
-    .doc(templateID)
-    .collection('images');
-
   const [loading, setLoading] = useState(true);
-  const [isFetching, setIsFetching] = useState(true);
-  const [initialImages, setImagesState] = useState<Array<any>>(images ? images : [] );
-
 
   useEffect(() => {
-    const unsubscribe = imageCollection.onSnapshot((querySnapshot) => {
-      let newImageObject = {};
-  
-      querySnapshot.docs.forEach((doc) => {
-        const imageData = doc.data();
-        const imageId = doc.id;
-  
-        if (imageData) {
-          newImageObject[imageId] = { id: imageId, ...imageData };
-        } else {
-          console.warn(`Document with ID ${imageId} has no data.`);
-        }
-      });
-      console.log(newImageObject, 122)
-      initialImages.push(newImageObject);
-      setImages?.(images ? images : [])
-      setLoading(false)
-    });
-  
-    return () => {
-      if(loading){
-        unsubscribe();
+    const templateDocRef = FIRESTORE.collection('users')
+      .doc(FIREBASE_AUTH?.currentUser?.uid)
+      .collection('templates')
+      .doc(templateID);
+
+    const unsubscribe = templateDocRef.onSnapshot((docSnapshot) => {
+      const newImageArray = []; // This will be an array of strings if images are just URLs
+      const templateData = docSnapshot.data();
+
+      if (templateData && templateData.images) {
+        newImageArray.push(...templateData.images); // Assuming 'images' is an array of strings (URLs)
+      } else {
+        console.warn(`Template with ID ${templateID} has no image data.`);
       }
-    };
-  }, []); 
+
+      setImages?.(newImageArray);
+      setLoading(false);
+    });
+
+    return () => unsubscribe(); // Clean up the subscription
+  }, [templateID]); // Depend on templateID to re-subscribe when it changes
 
   const handleImagePickAndUpload = async () => {
     try {
@@ -76,83 +61,110 @@ const ImageFragment = ({
       const response = await fetch(result.assets[0].uri);
       const blob = await response.blob();
 
-      const storageRef = ref(FIREBASE_STORAGE, `images/${new Date().getTime()}`);
+      const storageRef = ref(FIREBASE_STORAGE, `images/${result.assets[0].fileName}`);
       const uploadTask = uploadBytesResumable(storageRef, blob);
-      setLoading(true);
 
       uploadTask.on(
         'state_changed',
         (snapshot) => {
+          // Optional: Handle progress updates
         },
         (error) => {
           console.error('Error uploading image:', error);
-          console.log(t('error'))
+          alert('Error uploading image. Please try again.'); // Update with your error handling message
         },
         async () => {
           const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
-          const imageData:Images = {name: uploadTask.snapshot.metadata.name, 
-                            uri: downloadURL}
-          imageCollection.add(imageData).then(()=>{ 
-                                              alert('Image uploaded successfully!');
-                                              console.log('File available at', downloadURL); 
-                                              setIsFetching(true)
-                                            })
-                                            .catch((error) => {console.log(t('error')); console.error(error);})         
+          const templateDocRef = FIRESTORE.collection('users')
+            .doc(FIREBASE_AUTH?.currentUser?.uid)
+            .collection('templates')
+            .doc(templateID);
+
+          // Get current images array, add new image, and update document
+          templateDocRef.get().then((doc) => {
+            const currentImages = doc.data()?.images || [];
+            const updatedImages = [...currentImages, downloadURL];
+            templateDocRef.update({ images: updatedImages });
+          });
+
+          alert('Image uploaded successfully!');
+          console.log('File available at', downloadURL);
         }
       );
     } catch (error) {
       console.error('Error picking/uploading image:', error);
-      alert('Error picking/uploading image. Please try again.');
+      alert('Error picking/uploading image. Please try again.'); // Update with your error handling message
     } finally {
       setLoading(false);
     }
   };
 
-  const deleteImage = async(image: Images) => {
+  const deleteImage = async (imageURL: string) => {
     try {
-      const storageRef = ref(FIREBASE_STORAGE, `images/${image.name}`);
-      setLoading(true)
+      setLoading(true);
 
-      if (image.id === '' || typeof image.id === 'undefined'){
-        throw Error(t('missingAnswers'))
-      }
-      await imageCollection.doc(image.id).delete();
-      
-      deleteObject(storageRef)
-      .then(() => {
-        console.log('File deleted successfully');
-        if(image.uri=== backgroundImage){
-          setBackgroundImage?.('')
-        }
-      })
-      .catch((error) => {
-        console.error('Error deleting file:', error);
+      const templateDocRef = FIRESTORE.collection('users')
+        .doc(FIREBASE_AUTH?.currentUser?.uid)
+        .collection('templates')
+        .doc(templateID);
+
+      // Remove image URL from Firestore document
+      templateDocRef.get().then((doc) => {
+        const currentImages = doc.data()?.images || [];
+        const updatedImages = currentImages.filter((url: any) => url !== imageURL);
+        templateDocRef.update({ images: updatedImages });
       });
-      console.log('Question deleted successfully!');
+
+      // Delete image file from Firebase Storage
+      const fileRef = ref(FIREBASE_STORAGE, imageURL); // Assuming imageURL is the full path to the image in storage
+      await deleteObject(fileRef);
+
+      console.log('Image deleted successfully!');
     } catch (error) {
-      console.error('Error deleting question:', error.message);
-    }finally{
-      setLoading(false)
+      console.error('Error deleting image:', error);
+      alert('Error deleting image. Please try again.'); // Update with your error handling message
+    } finally {
+      setLoading(false);
     }
+
+  return { images, loading, handleImagePickAndUpload, deleteImage };
   }
+
+
   const setBG = (uri: string) => {
     setBackgroundImage?.(uri); 
     setImageFragmentVisibility?.(false)
   }
 
-  console.log(initialImages, 12234)
-
+  
   return (
     <View style={containerStyles.center}>
+      <View style={[containerStyles.bottomHorizontal, { marginTop: 8 }]}>
+        <CustomButtonWithIcon
+          onPress={handleImagePickAndUpload}
+          iconName="upload"
+          iconSize={ICONSIZE.small}
+          iconColor={COLORS.secondaryColor}
+          color={COLORS.secondaryColor}
+        />
+
+        <CustomButtonWithIcon
+          onPress={() => setImageFragmentVisibility?.(false)}
+          iconName="cancel"
+          iconSize={ICONSIZE.small}
+          iconColor={COLORS.backgroundColor}
+          color={COLORS.thirdColor}
+        />
+      </View>
      {!loading ? (
         <ScrollView>
-          {Array.isArray(initialImages) && images ? (
+          {Array.isArray(images) && images ? (
             <>
-              {initialImages.map((image: ImagesEdit, index: number) => (
+              {images.map((image: any, index: number) => (
                 <View style={containerStyles.horizontalContainer3} key={index}>
-                  <TouchableOpacity onPress={() => setBG(image.uri ? image.uri : '')}>
-                    <Image source={{uri: image.uri}} style={imageStyles.imageGallery}/>
-                  </TouchableOpacity>
+                  <Pressable onPress={() => setBG(image ? image : '')}>
+                    <Image source={{uri: image}} style={imageStyles.imageGallery}/>
+                  </Pressable>
                   <CustomButtonWithIcon
                     onPress={() => deleteImage(image)}
                     iconName="cancel"
@@ -170,24 +182,6 @@ const ImageFragment = ({
       ) : (
         <ActivityIndicator size="large" color={COLORS.activityIndicatorColor} />
       )}
-
-      <View style={[containerStyles.bottomHorizontal, { marginTop: 8 }]}>
-        <CustomButtonWithIcon
-          onPress={handleImagePickAndUpload}
-          iconName="upload"
-          iconSize={ICONSIZE.small}
-          iconColor={COLORS.secondaryColor}
-          color={COLORS.secondaryColor}
-        />
-
-        <CustomButtonWithIcon
-          onPress={() => setImageFragmentVisibility?.(false)}
-          iconName="cancel"
-          iconSize={ICONSIZE.small}
-          iconColor={COLORS.secondaryColor}
-          color={COLORS.secondaryColor}
-        />
-      </View>
     </View>
   );
 };

@@ -4,29 +4,18 @@ import { EnteredQuizData } from "./routers";
 import { EnterAmountOfQuestions, EnterCategoryScreen, EnterNameScreen, InitializedGameScreen } from "../components/game/enterQuizData";
 import { FIREBASE_AUTH, FIRESTORE } from "../firebase/firebaseConfig";
 import { QuestionEdit } from "../types/localTypes/editTypes";
-import { capitalizeFirstLetter, capitalizeKeys } from "../appFunctions/utils";
+import { capitalizeKeys } from "../appFunctions/utils";
 import GameNavigatorScreens from "./GameNavigator";
 
 const InitializeQuizNavigator = createNativeStackNavigator();
 
-interface InitializeQuizNavigatorProps extends EnteredQuizData {
-    loggedIn : boolean, 
-    setLoggedIn : any, 
-    enablement: boolean, 
-    setInitiatingQuiz: React.Dispatch<React.SetStateAction<boolean>>
-}
+const InitializeQuizNavigatorScreens = ({ navigation }: EnteredQuizData) => {
 
-const InitializeQuizNavigatorScreens = (
-                                  {  
-                                    loggedIn, 
-                                    setLoggedIn, 
-                                    navigation, 
-                                    initiatingQuiz,
-                                  }: InitializeQuizNavigatorProps) =>{
                                     
   const questionCollection = FIRESTORE.collection('questions').where('createdBy', '==', FIREBASE_AUTH?.currentUser?.uid);
 
   const [gameQuestions, setGameQuestions] = useState([] as QuestionEdit[]);
+  const [questions, setQuestions] = useState([] as QuestionEdit[]);
   const [categories, setCategories] = useState([] as string[]);
 
   const [ quizCategory , setQuizCategory ] = useState('')
@@ -34,7 +23,6 @@ const InitializeQuizNavigatorScreens = (
   const [ gameCode , setGameCode ] = useState("")
   const [loading, setLoading] = useState(false)
   const [gameStarted, setGameStarted] = useState(false)
-
 
   useEffect(() => {
     setLoading(true);
@@ -46,22 +34,21 @@ const InitializeQuizNavigatorScreens = (
           const possibleAnswersDoc = await doc.ref.collection('possibleAnswers').get();
           const possibleAnswers = possibleAnswersDoc.docs.map((answerDoc) => answerDoc.data());
           const capitalizedQuestionData = capitalizeKeys(questionData);
-
   
           return { ...capitalizedQuestionData, possibleAnswers };
         })
       );
+
+      setQuestions(updatedQuestions)
+
+      const newCategories = updatedQuestions
+        .map((question: QuestionEdit) => question.category)
+        .filter((category) => typeof category === 'string' && category.trim() !== ''); 
   
-      updatedQuestions.sort((q1: QuestionEdit, q2: QuestionEdit) =>
-        (q1 && q1.category ? q1.category : '').localeCompare(q2 && q2.category ? q2.category : '')
-      );
-      setGameQuestions(updatedQuestions);
-  
-      setCategories(
-        updatedQuestions
-          ? Array.from(new Set(updatedQuestions.map((question: QuestionEdit) => question.category)))
-          : []
-      );
+      setCategories((prevCategories: any) => {
+        const uniqueCategories = Array.from(new Set([...prevCategories, ...newCategories]));
+        return uniqueCategories;
+      });
       setLoading(false);
     });
   
@@ -71,7 +58,7 @@ const InitializeQuizNavigatorScreens = (
   }, []);
 
   return (
-    <InitializeQuizNavigator.Navigator>
+    <InitializeQuizNavigator.Navigator >
       <InitializeQuizNavigator.Screen
         name="EnterNameScreen"
         options={{ headerShown: false }}
@@ -82,7 +69,8 @@ const InitializeQuizNavigatorScreens = (
                   navigation={navigation}
                   setQuizName={setQuizName}
                   quizName={quizName}
-                  redirectToCategories={categories ? true: false}
+                  redirectToCategories={categories && categories.length > 0 ? true: false}
+                  initQuiz={questions && questions.length > 0 ? true: false}
                 />
             )}
         </InitializeQuizNavigator.Screen>
@@ -110,12 +98,12 @@ const InitializeQuizNavigatorScreens = (
             {(props) => (
                 <EnterAmountOfQuestions 
                   {...props} 
+                  questions={questions}
                   quizCategory={quizCategory} 
                   quizName={quizName} 
-                  questions={gameQuestions} 
                   navigation={navigation} 
                   setGameCode={setGameCode}
-                  setQuestions={setGameQuestions}
+                  setGameQuestions={setGameQuestions}
                 />
             )}
         </InitializeQuizNavigator.Screen>

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { View, StyleSheet, Text, ActivityIndicator } from 'react-native';
 import {containerStyles } from "../../../styles/components.style";
 import { useTranslation } from "react-i18next";
@@ -16,7 +16,7 @@ import TemplateViewComponent from './templatePreviewScreen';
 import { defaultTemplatePreviewStyle, answerContainerStylesArray, questionContainerStylesArray, screenTouchableArray } from '../../../styles/defaultPreview.styles';
 import { CustomButtonWithIcon } from '../../common/shared/components';
 import { ICONSIZE } from '../../../constants/theme';
-import { ImagesEdit, TemplateEdit } from '../../../types/localTypes/editTypes';
+import { TemplateEdit } from '../../../types/localTypes/editTypes';
 import { FIRESTORE, FIREBASE_AUTH } from '../../../firebase/firebaseConfig';
 
 
@@ -29,7 +29,6 @@ const TemplateScreen = ({ }: TemplateScreenProps) => {
 
   const [template, setTemplate] = useState<TemplateEdit>({} as TemplateEdit);
   const [direction, setDirection] = useState('column');
-  const [isFetching, setIsFetching] = useState(true);
   const [emptyTemplate, setEmptyTemplate] = useState(Object.keys(template).length < 1); 
   
   const [upperBarType, ] = useState('');
@@ -39,10 +38,15 @@ const TemplateScreen = ({ }: TemplateScreenProps) => {
   const [imageFragmentVisibility, setImageFragmentVisibility] = useState(false); 
   const [loading, setLoading] = useState(true)
 
-  const [touchedContainer, setTouchedContainer] = useState<Container>({name: '', style: defaultTemplatePreviewStyle[0],  stylesArray: []});
+  const [touchedContainer, setTouchedContainer] = useState<Container>({
+    name: '',
+    style: defaultTemplatePreviewStyle.screenTouchable, // Accessing style by its name
+    stylesArray: []
+  });
+
   const [containerStyle, setContainerStyle] = useState(touchedContainer.style);
 
-  const [images, setImages] = useState<Array<ImagesEdit>>([]); 
+  const [images, setImages] = useState<Array<string>>([]); 
   const [backgroundImage, setBackgroundImage] = useState(''); 
 
   const [templateID,setTemplateID] = useState(newTemplateUUID); 
@@ -70,14 +74,14 @@ const TemplateScreen = ({ }: TemplateScreenProps) => {
   const loadData = async () => {
     try {
       const querySnapshot = await templateCollection.get();
-      const newTemplateObject: TemplateEdit | undefined | null = {};
-
+      const newTemplateObject: any = {};
+  
       for (const doc of querySnapshot.docs) {
         const templateData = doc.data();
         const templateId = doc.id;
-
+  
         if (templateData) {
-          const images = (await templateCollection.doc(templateId).collection('images').get()).docs.map((imgDoc) => imgDoc.data());
+          const images = templateData.images || [];
           newTemplateObject[templateId] = { id: templateId, ...templateData, images };
         } else {
           console.warn(`Document with ID ${templateId} has no data.`);
@@ -85,61 +89,56 @@ const TemplateScreen = ({ }: TemplateScreenProps) => {
       }
       
       const templateIds = Object.keys(newTemplateObject);
-
-      setTemplate(newTemplateObject);
-      setImages(newTemplateObject[templateIds[0]].images);
-
-      newTemplateObject[templateIds[0]].images.forEach((image:ImagesEdit) =>{
-        images.push(image);
-        console.log(image, 2123)
-      })
-
-      setImages(images)
-      
-      setBackgroundImage(newTemplateObject[templateIds[0]].backgroundImage)
-      setDirection(newTemplateObject[templateIds[0]].direction)
-
-      setEmptyTemplate(templateIds.length === 0);
-
-      setContainers([
-        {
-          name: 'Background',
-          style: newTemplateObject[templateIds[0]].templateBackground.style,
-          stylesArray: newTemplateObject[templateIds[0]].templateBackground.stylesArray,
-        },
-        {
-          name: 'Question',
-          style: newTemplateObject[templateIds[0]].questionContainer.style,
-          stylesArray: newTemplateObject[templateIds[0]].questionContainer.stylesArray,
-        },
-        {
-          name: 'Answers',
-          style: newTemplateObject[templateIds[0]].answerContainer.style,
-          stylesArray: newTemplateObject[templateIds[0]].answerContainer.stylesArray,
-        },
-      ]);
-      setTemplateID(templateIds[0]);
-      
+  
+      if (templateIds.length > 0) {
+        setTemplate(newTemplateObject);
+        
+        const firstTemplateImages = newTemplateObject[templateIds[0]].images || [];
+        setImages(firstTemplateImages); 
+        const firstTemplateBackgroundImage = newTemplateObject[templateIds[0]].backgroundImage || '';
+        setBackgroundImage(firstTemplateBackgroundImage); 
+  
+        setDirection(newTemplateObject[templateIds[0]].direction);
+  
+        setContainers([
+          {
+            name: 'Background',
+            style: newTemplateObject[templateIds[0]].templateBackground?.style || {},
+            stylesArray: newTemplateObject[templateIds[0]].templateBackground?.stylesArray || [],
+          },
+          {
+            name: 'Question',
+            style: newTemplateObject[templateIds[0]].questionContainer?.style || {},
+            stylesArray: newTemplateObject[templateIds[0]].questionContainer?.stylesArray || [],
+          },
+          {
+            name: 'Answers',
+            style: newTemplateObject[templateIds[0]].answerContainer?.style || {},
+            stylesArray: newTemplateObject[templateIds[0]].answerContainer?.stylesArray || [],
+          },
+        ]);
+  
+        setTemplateID(templateIds[0]);
+  
+        setEmptyTemplate(templateIds.length === 0);
+      } else {
+        console.warn("No templates found.");
+        setEmptyTemplate(true);
+      }
+  
     } catch (error) {
       console.error(error);
     } finally {
       setLoading(false);
     }
   };
+  
 
   useEffect(() => {
     if(loading){
       loadData();
     }
   }, [template]);
-
-
-  console.log(template, 1233)  
-  console.log(backgroundImage, 12334)  
-
-  console.log(images, 1977)
-
-  console.log(containers, 1223321)
 
   useEffect(() => {  
     const newContainer: Container = {
@@ -168,46 +167,21 @@ const TemplateScreen = ({ }: TemplateScreenProps) => {
         templateBackground: containers[0],
         questionContainer: containers[1],
         answerContainer: containers[2],
-        backgroundImage: backgroundImage,
+        backgroundImage: backgroundImage ? backgroundImage : "",
         direction: direction === 'row' || direction === 'column' ? direction : undefined
       }; 
 
-      console.log(templateData, 182893)
-      console.log(backgroundImage, 36363)
-      console.log(emptyTemplate, 12345)
       if (emptyTemplate) {
         const newTemplateRef = templateCollection.doc(newTemplateUUID);
-        await newTemplateRef.set(templateData);
-  
-        if (images) {
-          const batch = FIRESTORE.batch();
-  
-          images.forEach((image: ImagesEdit) => {
-            const documentRef = newTemplateRef.collection('images').doc(uuidv4());
-            batch.set(documentRef, image);
-          });
-            await batch.commit();
-        }
+        await newTemplateRef.set(templateData); 
   
         console.log(t('templateAddedSuccessfully'));
 
       } else {
         setTemplate(templateData)
-        console.log(template, 2172873)
-        console.log(templateID, 12344)
 
         await templateCollection.doc(templateID).update(templateData);
         console.log(t('templateUpdatedSuccessfully'));
-
-        if (images) {
-          const batch = FIRESTORE.batch();
-  
-          images.forEach((image: ImagesEdit) => {
-            const documentRef = templateCollection.doc(template.id).collection('images').doc(uuidv4());
-            batch.update(documentRef, image);
-          });
-            await batch.commit();
-        }
       }
     } catch (error) {
       console.error(error);
@@ -267,7 +241,8 @@ const TemplateScreen = ({ }: TemplateScreenProps) => {
                       setBackgroundImage={setBackgroundImage}
                       backgroundImage={backgroundImage} 
                       direction={direction === 'row' || direction === 'column' ? direction : undefined}
-                      setDirection={setDirection}                    />
+                      setDirection={setDirection}                    
+                    />
                   </View>
                 ) : (
                   <></>

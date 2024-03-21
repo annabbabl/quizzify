@@ -8,4 +8,4 @@ interface RowComponentProps {
     possibleAnswers: string[];
 }
 
-export {RowComponentProps}
+export type {RowComponentProps}

@@ -30,7 +30,7 @@ const TableScreen = ({ editing, questions, categories, setIsFetching }: Question
                 fontSize="2xl" 
                 bold
               >
-                {t('amountOfQuestions') + ': '+ questions.length + (questions.length < 5 ? t('cantPlay') : '')}
+                {t('amountOfQuestions') + ': '+ questions.length + (questions.length < 5 ? " " + t('cantPlay') : '')}
               </Text>
               {questions.map((question: QuestionEdit) => (
                 editing ? (

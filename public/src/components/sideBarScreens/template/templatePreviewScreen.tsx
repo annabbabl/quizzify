@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { TouchableOpacity, View, Text, Image, FlatList } from 'react-native';
+import { useState } from 'react';
+import { Pressable, View, Text, Image, FlatList } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import Tooltip from 'react-native-walkthrough-tooltip';
 import { PossibleAnswerEdit, QuestionEdit } from '../../../types/localTypes/editTypes';
@@ -41,7 +41,12 @@ const TemplateViewComponent = ({
     return 200; // Return undefined if the width style is not found
   };
 
-  console.log(backgroundImage, direction, 1234)
+  const checkForPropery = (property: string, containerNumber: number, defaultValue: string | number) => {
+    const searchedValue: any = 
+          containers && containers[containerNumber].stylesArray && containers[containerNumber]  && containers[containerNumber].stylesArray.find(css => css.property === property)?.value ?
+          containers[containerNumber].stylesArray.find(css => css.property === property)?.value : defaultValue 
+    return searchedValue
+  }
 
   const renderItem = ({ item, index }: { item: PossibleAnswerEdit; index: number }) => {
     const calculatedWidth = calculateWidth((containers && containers[2].stylesArray && containers[2] ? containers[2].stylesArray : []));  
@@ -56,7 +61,7 @@ const TemplateViewComponent = ({
             }
           }
         >
-        <TouchableOpacity
+        <Pressable
           onPress={() => {
             setTouchedContainer?.((containers && containers[2] && containers[2] ? containers[2] : {} as Container));
             setTooltipVisible(false);
@@ -65,14 +70,13 @@ const TemplateViewComponent = ({
         >
           <Text
             style={{
-              color: (containers && containers[2].stylesArray && containers[2]  ? containers[2].stylesArray['color'] : [])
-                ? (containers && containers[2].stylesArray && containers[2]  ? containers[2].stylesArray['color'] : [])
-                : COLORS.backgroundColor,
+              color: checkForPropery('color', 1, COLORS.backgroundColor), 
+              textAlign: checkForPropery('textAlign', 1, 'center'), 
             }}
           >
             {item.possibleAnswer}
           </Text>
-        </TouchableOpacity>
+        </Pressable>
       </View>
     );
   };
@@ -91,7 +95,7 @@ const TemplateViewComponent = ({
           }
         onClose={() => setTooltipVisible(false)}
       >
-        <TouchableOpacity
+        <Pressable
           onPress={() => {
             setTouchedContainer?.((containers && containers[0] ? containers[0] : {} as Container));
             setContainerStyle?.((containers && containers[0] && containers[0].style ? containers[0].style : {} ));
@@ -106,7 +110,7 @@ const TemplateViewComponent = ({
           )}
           
           <View style={{...convertStylesToStyleSheet((containers && containers[1] && containers[1].stylesArray ? containers[1].stylesArray : [] ))}}>
-            <TouchableOpacity
+            <Pressable
               onPress={() => {
                 setTouchedContainer?.((containers && containers[1] ? containers[1] : {} as Container ));
                 setTooltipVisible(false);
@@ -115,17 +119,15 @@ const TemplateViewComponent = ({
             >
               <Text
                 style={{
-                  color: ((containers && containers[1] ? containers[1]: {} as Container )).stylesArray['color']
-                    ? (containers && containers[1] ? containers[1]: {} as Container ).stylesArray['color']
-                    : COLORS.backgroundColor,
-                  textAlign: 'center',
-                  fontSize: SIZES.large,
+                  color:  checkForPropery('color', 1, COLORS.backgroundColor),
+                  fontSize:  checkForPropery('fontSize', 1, SIZES.large),
                   marginTop: 20,
+                  textAlign: checkForPropery('textAlign', 1, 'center'), 
                 }}
               >
                 {dummyQuestion.question}
               </Text>
-            </TouchableOpacity>
+            </Pressable>
           </View>
           { backgroundImage && direction === 'row' ? (
             <Image source={{ uri: backgroundImage }} style={imageStyles.backgroundImageTemplate} />
@@ -143,7 +145,7 @@ const TemplateViewComponent = ({
             <>
               {dummyQuestion?.possibleAnswers?.map((possibleAnswer: PossibleAnswerEdit, index: number) => (
                 <View key={index} style={{...convertStylesToStyleSheet((containers && containers[2] && containers[2].stylesArray ? containers[2].stylesArray : [] ))}}>
-                  <TouchableOpacity
+                  <Pressable
                     onPress={() => {
                       setTouchedContainer?.((containers && containers[2] ? containers[2]: {} as Container ));
                       setTooltipVisible(false);
@@ -152,20 +154,18 @@ const TemplateViewComponent = ({
                   >
                     <Text
                       style={{
-                        color: (containers && containers[2] && containers[2].style ? containers[2].style : {} ).stylesArray['color']
-                          ? (containers && containers[2] && containers[2].style ? containers[2].style : {} ).stylesArray['color']
-                          : COLORS.backgroundColor,
-                      }}
+                        color:checkForPropery('color', 2, COLORS.backgroundColor),
+                    }}
                     >
                       {possibleAnswer.possibleAnswer}
                     </Text>
-                  </TouchableOpacity>
+                  </Pressable>
                 </View>
               ))}
             </>
           )}
          
-        </TouchableOpacity>
+        </Pressable>
       </Tooltip>
     </View>
   );  

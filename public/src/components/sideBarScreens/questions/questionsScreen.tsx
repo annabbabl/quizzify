@@ -19,12 +19,11 @@ import { FIRESTORE, FIREBASE_AUTH } from '../../../firebase/firebaseConfig';
 import { capitalizeKeys } from '../../../appFunctions/utils';
 
 
-
-const QuestionsScreen = ({editing, adding}: SideBarRouterProps) => {
+const QuestionsScreen = ({editing}: SideBarRouterProps) => {
     const questionCollection = FIRESTORE.collection('questions').where('createdBy', '==', FIREBASE_AUTH?.currentUser?.uid);
 
     const {t} = useTranslation()
-    const [, setAdding] = useState(false);
+    const [adding, setAdding] = useState(false);
     const [filter, setFilter] = useState<Filter>({});
     const [questions, setQuestions] = useState([] as QuestionEdit[]);
     const [categories, setCategories] = useState([] as string[]);
@@ -32,6 +31,7 @@ const QuestionsScreen = ({editing, adding}: SideBarRouterProps) => {
     const [addModalVisibility, setAddModalVisibilty] = useState(false);
     const [isFetching, setIsFetching] = useState(true);
     const [searchQuery, setSearchQuery] = useState('');
+    
 
 
     useEffect(() => {
@@ -41,6 +41,7 @@ const QuestionsScreen = ({editing, adding}: SideBarRouterProps) => {
         const updatedQuestions = await Promise.all(
           querySnapshot.docs.map(async (doc) => {
             const questionData = { id: doc.id, ...doc.data() };
+            console.log(doc.data(), 78781)
             const possibleAnswersDoc = await doc.ref.collection('possibleAnswers').get();
             const possibleAnswers = possibleAnswersDoc.docs.map((answerDoc) => answerDoc.data());
     
@@ -49,7 +50,6 @@ const QuestionsScreen = ({editing, adding}: SideBarRouterProps) => {
             return { ...capitalizedQuestionData, possibleAnswers };
           })
         );
-  3
         updatedQuestions.sort((q1: QuestionEdit, q2: QuestionEdit) => (q1 && q1.category ? q1.category: '').localeCompare(q2 && q2.category ? q2.category: ''));
         setQuestions(updatedQuestions);
     
@@ -91,17 +91,27 @@ const QuestionsScreen = ({editing, adding}: SideBarRouterProps) => {
         }
       };
     }, [searchQuery, filter]);
+    console.log(questions, 78787)
     
     return (
       <NativeBaseProvider>
-        <ScrollView contentContainerStyle={containerStyles.container}>
+        {adding ? (
+          <AddQuestions 
+          categories={categories} 
+          adding={adding} 
+          setIsFetching={setIsFetching} 
+          setAdding={setAdding}
+        />
+        ):(
+        <ScrollView contentContainerStyle={[containerStyles.container, { backgroundColor: COLORS.backgroundColor }]}>
           <View style={{backgroundColor:COLORS.backgroundColor}}>
             <CustomTitle label={t('questions')}/>
             {!editing && (
               <View style={containerStyles.horizontalContainer1}>
                   <Searchbar placeholder="Search" onChangeText={(query)=> setSearchQuery(query)} value={searchQuery} />
+                 
                   <CustomButtonWithIcon  
-                    onPress={() => (setAddModalVisibilty(true))}
+                    onPress={() => (setAdding(true))}
                     iconName={'plus-circle'}
                     iconSize={ICONSIZE.small}
                     iconColor={COLORS.secondaryColor}
@@ -125,6 +135,8 @@ const QuestionsScreen = ({editing, adding}: SideBarRouterProps) => {
         </View>
 
         </ScrollView>
+        )}
+        
 
         {filterModalVisibility && 
           <SetFilterComponent 
@@ -133,14 +145,6 @@ const QuestionsScreen = ({editing, adding}: SideBarRouterProps) => {
             filter={filter} 
             setModalVisibilty={setFilterModalVisibilty} 
           />}
-        {addModalVisibility && 
-          <AddQuestions 
-            categories={categories} 
-            adding={adding} 
-            setModalVisibilty={setAddModalVisibilty} 
-            setIsFetching={setIsFetching} 
-          />
-        }
       </NativeBaseProvider>
 
     );

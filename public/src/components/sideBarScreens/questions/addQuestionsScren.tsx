@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { ActivityIndicator, KeyboardAvoidingView, Modal, View } from 'react-native';
+import { ActivityIndicator, KeyboardAvoidingView, Modal, Platform, View } from 'react-native';
 import firebase from 'firebase/compat/app'
 import { CustomButton, CustomSwitch, CustomText } from '../../common/shared/components';
 import {containerStyles } from "../../../styles/components.style";
@@ -13,14 +13,14 @@ import { CheckIcon, NativeBaseProvider, Select, Text} from 'native-base';
 import { List, TextInput } from 'react-native-paper';
 import { QuestionScreenRouterProps } from '../../../navigation/routers';
 import { FIREBASE_AUTH, FIRESTORE } from '../../../firebase/firebaseConfig';
+import { runInContext } from 'vm';
 
 
-const AddQuestions = ({categories, adding, setModalVisibilty, setIsFetching}: QuestionScreenRouterProps) => {
+const AddQuestions = ({categories,setAdding, setModalVisibilty, setIsFetching}: QuestionScreenRouterProps) => {
     const {t} = useTranslation()
     const questionCollection = FIRESTORE.collection('questions'); 
    
     const [loading, setLoading] = useState(false)
-    const [, setAdding] = useState(adding)
     const [switchVisibility, setSwitchVisibility] = useState(true)
 
     const [question, setQuestion] = useState('');
@@ -29,17 +29,13 @@ const AddQuestions = ({categories, adding, setModalVisibilty, setIsFetching}: Qu
     const [rightAnswerBoolean, setRightAnswerBoolean] = useState(true);
     const [trueOrFalseQuestion, setTrueOrFalseQuestion] = useState(false);
     const [possibleAnswer, setPossibleAnswer] = useState('');
-    const [possibleAnswers, setPossibleAnswers] = useState([]);
+    const [possibleAnswers, setPossibleAnswers] = useState<Array<string>>([]);
     
     const createdAt = firebase.firestore.Timestamp.now()
     const createdBy = FIREBASE_AUTH?.currentUser?.uid
 
     const topMarhinCategoryInput = categories ? 10: 0
 
-    useEffect(() => {
-      setAdding(adding);
-    }, [adding]);
-    
     
     const addQuestionToFirebase = async () =>{
         try {
@@ -62,7 +58,7 @@ const AddQuestions = ({categories, adding, setModalVisibilty, setIsFetching}: Qu
             createdBy: createdBy ? createdBy: '' , 
           }
 
-          if(!questionData.trueOrFalseQuestion && (possibleAnswers.length < 1  && possibleAnswer.length<1)){
+          if(!questionData.trueOrFalseQuestion && (possibleAnswers.length < 1)){
             throw Error(t('missingAnswers'))
           }
 
@@ -73,26 +69,28 @@ const AddQuestions = ({categories, adding, setModalVisibilty, setIsFetching}: Qu
 
               const batch = FIRESTORE.batch();
               const possibleAnswersCollection = questionCollection.doc(newQuestionUUID).collection('possibleAnswers'); 
-      
-              answers.forEach((possibleAnswer:any) => {
-                const answerData: PossibleAnswerAdd = {
-                  possibleAnswer: possibleAnswer, 
-                  questionID: newQuestionUUID
-                }
-                const documentRef = possibleAnswersCollection.doc(uuidv4());
-                batch.set(documentRef, { possibleAnswer });
-              });
-              setModalVisibilty?.(false)
+              const documentRef = possibleAnswersCollection.doc(uuidv4());
+
+              if(!trueOrFalseQuestion){
+                answers.forEach((possibleAnswer:any) => {
+                  batch.set(documentRef, { possibleAnswer});
+                });
+              }
+              else{
+                const r = !rightAnswerBoolean.toString()
+                batch.set(documentRef, { r });
+              }
               await batch.commit();
+              
             }catch(error){
               console.log(t('error'))
           }
             
           console.log('Question added successfully!');
           console.log(t('questionAddedSuccessfully'))
-          setAdding(false)
+          setAdding?.(false)
           setIsFetching?.(true)
-        } catch (error) {
+        } catch (error: any) {
           console.error('Error adding question:', error.message);
           console.log(t('errorWhileAddingQuestion'))
         }
@@ -113,17 +111,9 @@ const AddQuestions = ({categories, adding, setModalVisibilty, setIsFetching}: Qu
     };
 
     return (
-      <Modal
-      animationType="slide"
-      transparent={true}
-      visible={true}
-      onRequestClose={() => setModalVisibilty?.(false)}
-    >
-        <View style={containerStyles.modalContainer}>
-          <View style={containerStyles.modalContent}>
+     
           <ScrollView contentContainerStyle={containerStyles.container}>
-            <KeyboardAvoidingView >
-              <NativeBaseProvider>
+            <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"}>
               <Text fontSize="4xl" bold>{t('addQuestion')}</Text>
                 <TextInput
                     label={t('question')}
@@ -135,12 +125,12 @@ const AddQuestions = ({categories, adding, setModalVisibilty, setIsFetching}: Qu
                 />
                 <CustomText boldFactor={true} label={t('category')} />
                   {categories  ? (
-                      <Select selectedValue={t('selectCategory')} minWidth="200" accessibilityLabel={t('selectCategory')} placeholder={t('selectCategory')} _selectedItem={{
+                      <Select selectedValue={t('selectCategory')} minWidth="200" aria-label={t('selectCategory')} placeholder={t('selectCategory')} _selectedItem={{
                           bg: "teal.600",
                           endIcon: <CheckIcon size="5" />
                         }} mt={1} onValueChange={(category: string) => setChoosenCategory(category)}>
-                        {categories.map((category: string)=>
-                          <Select.Item label={category} value={category} />
+                        {categories.map((category: string, index: number)=>
+                          <Select.Item label={category} value={category} key={index}/>
                         )}
                       </Select>
                   ):(
@@ -180,11 +170,11 @@ const AddQuestions = ({categories, adding, setModalVisibilty, setIsFetching}: Qu
                           placeholder={t('rightAnswer')}
                           style={{marginBottom: 20}}
                       />
-                      <CustomText boldFactor={true} label={t('possibleAnswers')} />
+                      <CustomText boldFactor={true} label={t('otherAnswers')} />
                       {possibleAnswers.length > 0 && possibleAnswers.length < 5 ? (
                         <List.Section>
                           {possibleAnswers.map((possibleAnswer: string, index: number) => (
-                            <List.Item title={possibleAnswer}/>
+                            <List.Item title={possibleAnswer} key={index}/>
                           ))}
                         </List.Section>
                       ) : possibleAnswers.length === 4 ? (
@@ -204,7 +194,6 @@ const AddQuestions = ({categories, adding, setModalVisibilty, setIsFetching}: Qu
                       />
                     </>
                   )}
-              </NativeBaseProvider>
             </KeyboardAvoidingView>
             {loading ? (
               <ActivityIndicator size='large' color={COLORS.activityIndicatorColor} />
@@ -214,13 +203,11 @@ const AddQuestions = ({categories, adding, setModalVisibilty, setIsFetching}: Qu
                   <CustomButton small={true} label={t('addPossibleAnswer')} onPress={addPossibleAnswer} />
                 ) : null}
                 <CustomButton small={true} label={t('save')} onPress={addQuestionToFirebase} /> 
-                <CustomButton label={t('close')} onPress={() => setModalVisibilty?.(false)} />
+                <CustomButton small={true} label={t('close')} onPress={() => setAdding?.(false)} />
               </>
             )}
           </ScrollView>
-          </View>
-        </View>
-      </Modal>
+     
     );
 }
 

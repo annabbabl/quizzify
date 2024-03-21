@@ -5,9 +5,6 @@ type TemplateBackground = {
     backgroundimage?: string,
 }
 
-type ContainerStyles = Border & Shadow & Color & Animation & Other &{ 
-
-}
 type Container =  &{
     name: 
         'Background' | 
@@ -50,23 +47,13 @@ type Border = {
     borderWidth?: number,
 }
 
-type Color = {
-    primaryColor?: string,
-    secondaryColor?: string,
-    opacity: number
-}
 
 type offset = {
     width?: number,
     height?: number
 }
 
-type Animation = {
-    
-}
-
-
-export {
+export type {
     TemplateBackground,
     Container, 
     Shadow,

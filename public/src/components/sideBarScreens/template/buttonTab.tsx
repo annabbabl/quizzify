@@ -7,7 +7,6 @@ import { ToggleButton } from 'react-native-paper';
 import { View, StyleSheet } from 'react-native';
 import { TemplateScreenProps } from '../../../navigation/routers';
 import { useTranslation } from 'react-i18next';
-import React from 'react';
 
 const TabBottomBar = ({ setBarItem, 
   upperBarType, 
@@ -37,7 +36,7 @@ const TabBottomBar = ({ setBarItem,
             icon={bottomBarItem.iconName}
             value={bottomBarItem.name}
             key={index}
-            accessibilityLabel={t(bottomBarItem.name)}
+            aria-label={t(bottomBarItem.name)}
             size={SIZES.xxLarge}
             style={toggleButtonStyle.button}
           />

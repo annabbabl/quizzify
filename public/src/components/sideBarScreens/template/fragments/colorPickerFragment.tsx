@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { TemplateFragmentProps } from '../../../../navigation/routers';
 import { View } from 'react-native';
 import "../../../../constants/i18next"

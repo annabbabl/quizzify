@@ -1,3 +1,4 @@
+import { User } from 'firebase/auth';
 import {  TemplateBackground, Container } from './templateTypes';
 
 type UserEdit = {
@@ -19,7 +20,7 @@ type QuestionEdit = {
 
 
 type PossibleAnswerEdit = {
-    possibleAnswer?: string;
+    possibleAnswer?: string | boolean;
     count?: number; 
 };
 
@@ -34,23 +35,50 @@ type TemplateEdit = {
     templateBackground?: Container, 
     questionContainer?: Container, 
     answerContainer?: Container
-    images?: Array<ImagesEdit>
+    images?: Array<string>
     backgroundImage?:string,
     direction?: 'row' | 'column'
 }
 
 type QuizInitDataEdit = {
+    id?:string, 
+    createdBy?: string
     quizName?: string, 
     quizCategory? : string, 
     numberOfQuestions?: number, 
-    questions: Array<QuestionEdit>
+    questions?: Array<QuestionEdit>,
+    roundInformation?: Array<RoundInformation>,
+    winners? : Array<joinedUser>,
+    started?: boolean, 
+    initialized?: boolean,
+    joinedUsers? : Array<joinedUser>
 }
 
-export {
+type GameEdit = QuizInitDataEdit & {
+    started?: boolean
+}
+
+type joinedUser = {
+    id: string | undefined, 
+    username: string | undefined | null, 
+    currentPoints: number | undefined,
+}
+type RoundInformation = {
+    userId: string | undefined, 
+    username: string | undefined | null, 
+    answerStatus: boolean, 
+    question : string | undefined, 
+    currentRound: number
+}
+
+export type {
     ImagesEdit,
     UserEdit, 
     QuestionEdit, 
     PossibleAnswerEdit,
     TemplateEdit,
-    QuizInitDataEdit
+    QuizInitDataEdit,
+    GameEdit, 
+    RoundInformation, 
+    joinedUser 
 }

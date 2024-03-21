@@ -1,9 +1,8 @@
 
-import { TouchableOpacity, TouchableOpacityProps, StyleSheet, View, Switch, TextProps, SwitchProps, Text as NT, Animated} from "react-native";
+import { Pressable, PressableProps, View, Switch, TextProps, SwitchProps, Text as NText, Animated} from "react-native";
 import { MaterialIcons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { containerStyles, styles, textStyles } from "../../../styles/components.style"
 import React from "react";
-import * as Font from "expo-font";
 import { COLORS, SHADOWS } from "../../../constants";
 import { NativeBaseProvider, Text } from "native-base";
 import { Avatar } from "react-native-paper";
@@ -18,7 +17,7 @@ interface CustomSwitchProps extends SwitchProps{
     onValueChange?: (value: boolean) => void;
     switchSize: string; 
 }
-interface CustomButtonProps extends TouchableOpacityProps {
+interface CustomButtonProps extends PressableProps {
     label?: string;
     value?: string;
     small?: boolean; 
@@ -35,7 +34,8 @@ interface CustomIconTouchable extends CustomButtonProps{
     boldFactor?: boolean, 
 }
     
-const LeftContent = props => <Avatar.Icon {...props} icon="account" />
+const LeftContent = (props: any) => <Avatar.Icon {...props} icon="account" />
+const LeftGameContent = (props: any) => <Avatar.Icon {...props} icon="gamepad" />
 
 const CustomTitle: React.FC<CustomTexProps>= ({label, ...rest}) =>{
     return(
@@ -97,7 +97,7 @@ const CustomButton: React.FC<CustomButtonProps> = ({ label, small, ...rest }) =>
     };
   
     return (
-      <TouchableOpacity
+      <Pressable
         style={[styles.button, SHADOWS.middle]}
         {...rest}
         onPressIn={handlePressIn}
@@ -108,9 +108,9 @@ const CustomButton: React.FC<CustomButtonProps> = ({ label, small, ...rest }) =>
             transform: [{ scale: scaleValue }],
           }}
         >
-          <NT style={small ? styles.buttonTextXS : styles.buttonTextXL} >{label}</NT>
+          <NText style={small ? styles.buttonTextXS : styles.buttonTextXL} >{label}</NText>
         </Animated.View>
-      </TouchableOpacity>
+      </Pressable>
     );
   };
   
@@ -147,15 +147,15 @@ const CustomButton: React.FC<CustomButtonProps> = ({ label, small, ...rest }) =>
 
 
     return (
-      <TouchableOpacity {...rest} onPressIn={handlePressIn} onPressOut={handlePressOut}>
+      <Pressable {...rest} onPressIn={handlePressIn} onPressOut={handlePressOut} >
         {label ? (
           <View style={{ flexDirection: flexDirection, alignItems: 'center', marginVertical: 10, backgroundColor: color }}>
             {direction === 'left' ? (
               <View style={{width:'60%', backgroundColor: color}}>
                 {boldFactor? (
-                  <NT style={[textStyles.smallIconsText, {fontWeight:'bold', color: textColor}]}>{label}</NT>
+                  <NText style={[textStyles.smallIconsText, {fontWeight:'bold', color: textColor}]}>{label}</NText>
                 ): (
-                  <NT style={[textStyles.smallIconsText, {color: textColor}]}>{label}</NT>
+                  <NText style={[textStyles.smallIconsText, {color: textColor}]}>{label}</NText>
                 )}
               </View>
               ):(
@@ -179,9 +179,9 @@ const CustomButton: React.FC<CustomButtonProps> = ({ label, small, ...rest }) =>
             {direction === 'right' ? (
               <>
                 {boldFactor? (
-                  <NT style={[textStyles.smallIconsText, {fontWeight:'bold'}]}>{label}</NT>
+                  <NText style={[textStyles.smallIconsText, {fontWeight:'bold'}]}>{label}</NText>
                 ): (
-                  <NT style={textStyles.smallIconsText}>{label}</NT>
+                  <NText style={textStyles.smallIconsText}>{label}</NText>
                 )}
               </>
               ):(
@@ -204,15 +204,15 @@ const CustomButton: React.FC<CustomButtonProps> = ({ label, small, ...rest }) =>
             </View>
           </Animated.View>
         )}
-      </TouchableOpacity>
+      </Pressable>
     );
 };
 
 const CustomLink: React.FC<CustomButtonProps> = ({ label,onPress,  ...rest }) =>{
     return (
-        <TouchableOpacity {...rest} onPress={onPress}>
-            <NT style={textStyles.boldText}>{label}</NT>
-        </TouchableOpacity>
+        <Pressable {...rest} onPress={onPress}>
+            <NText style={textStyles.boldText}>{label}</NText>
+        </Pressable>
     )
 }
 
@@ -236,69 +236,16 @@ const CustomSwitch: React.FC<CustomSwitchProps> = ({
     );
   };
 
-const HeaderRectangle: React.FC<CustomTexProps> = ({ label,...rest }) =>{
-    return (
-    <View style={rectangleStyles.rectangleParent} {...rest}>
-        <View style={rectangleStyles.groupChild} />
-        <Text style={rectangleStyles.text}>{label}</Text>
-    </View>
-    );
-};
 
-const rectangleStyles = StyleSheet.create({
-    groupChild: {
-        backgroundColor: "#061ef3",
-        shadowColor: "rgba(0, 0, 0, 0.25)",
-        shadowOffset: {
-            width: 4,
-            height: 6
-        },
-        shadowRadius: 0,
-        shadowOpacity: 1,
-        width: 293,
-        height: 108,
-        textAlign: "auto",
-        position: "relative",
-        justifyContent: "space-between", 
-        alignItems:'center',
-        alignSelf:'auto'
-        },
-        text: {
-            top: 26,
-            left: 17,
-            fontSize: 38,
-            fontFamily: "KumarOne-Regular",
-            color: "#fff",
-            textAlign: "center",
-            width: 259,
-            height: 67,
-            position: "absolute", 
-            justifyContent: "center", 
-            marginLeft: '18%',
-            alignContent:'center',
-            alignSelf:'center'
-        },
-        rectangleParent: {
-            width: "100%",
-            height: 108,
-            alignItems: 'center',
-            marginTop: 20,
-            marginBottom: 20,
-            textAlign: "center",
-            justifyContent: "space-between", 
-            alignContent:'center',
-            alignSelf:'center'
-        }
-});
 
 export{
     LeftContent,
+    LeftGameContent,
     CustomButton, 
     CustomButtonWithIcon, 
     CustomTitle,
     CustomSubTitle,
     CustomText, 
     CustomLink, 
-    HeaderRectangle, 
     CustomSwitch,
 }

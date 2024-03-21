@@ -11,8 +11,6 @@ type RootStackParamList = {
 export type QuestionsScreenNavigatorProps = StackNavigationProp<RootStackParamList, 'QuestionsScreen'>;
 export type QuestionsScreenRouteProps = RouteProp<RootStackParamList, 'QuestionsScreen'>;
 
-const Stack = createStackNavigator<RootStackParamList>();
-
 const QuestionsScreenNavigator = () => {
   return (
     <Stack.Navigator initialRouteName="QuestionsScreen">
@@ -21,5 +19,7 @@ const QuestionsScreenNavigator = () => {
     </Stack.Navigator>
   );
 };
+
+const Stack = createStackNavigator<RootStackParamList>();
 
 export default QuestionsScreenNavigator;
